@@ -32,9 +32,9 @@ permissions:
   nightjoiner.player.broadcast.quit:
     default: false
 
-  nightjoiner.player.broadcastjoin:
+  nightjoiner.player.broadcast.join:
     default: false
-  nightjoiner.player.broadcastquit:
+  nightjoiner.player.broadcast.quit:
     default: false
 
   nightjoiner.admin.reload:
