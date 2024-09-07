@@ -1,0 +1,93 @@
+#
+# Messages of plugin
+# Support only MiniMessage format
+#
+
+global:
+  no-permission:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>У вас <#d45079>недостаточно прав</#d45079> для выполнения этого действия"
+    - ""
+  not-player:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Эта команда <#d45079>недоступна</#d45079> для выполнения из консоли"
+    - ""
+  database-error:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>При выполнении действия <#d45079>произошла ошибка</#d45079> в базе данных"
+    - ""
+
+nightjoiner:
+  usage:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Информация"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner reload'><#745c97>/nightjoiner reload</click> <#c0c0c0>- <#fcfcfc>перезагрузить плагин"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner ban'><#745c97>/nightjoiner ban <ник></click> <#c0c0c0>- <#fcfcfc>заблокировать игрока"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner unban'><#745c97>/nightjoiner unban <ник></click> <#c0c0c0>- <#fcfcfc>разблокировать игрока"
+    - ""
+  reloaded:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Плагин <#ace1af>успешно перезагружен</#ace1af>"
+    - ""
+  player-not-found:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игрок <#745c97>%player%</#745c97> не найден"
+    - ""
+  banned:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#d45079>заблокирована</#d45079> возможность установки сообщений"
+    - ""
+  unbanned:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#ace1af>разблокирована</#ace1af> возможность установки сообщений"
+    - ""
+
+setjoin:
+  usage:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Использование <#745c97>/setjoin</#745c97>:"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/setjoin'><#745c97>/setjoin <текст></click> <#c0c0c0>- <#fcfcfc>установить текст сообщения при входе"
+    - ""
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы установили сообщение входа на <#ace1af>%message%</#ace1af>"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция установки сообщений при входе была <#d45079>заблокирована за нарушение правил</#d45079>!"
+    - ""
+
+setquit:
+  usage:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Использование <#745c97>/setjoin</#745c97>:"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/setquit'><#745c97>/setquit <текст></click> <#c0c0c0>- <#fcfcfc>установить текст сообщения при выходе"
+    - ""
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы установили сообщение выхода на <#d45079>%message%</#d45079>"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция установки сообщений при выходе была <#d45079>заблокирована за нарушение правил</#d45079>!"
+    - ""
+
+resetjoin:
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы <#d45079>успешно сбросили</#d45079> сообщение при входе"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция сброса сообщений при входе была <#d45079>заблокирована за нарушение правил</#d45079>!"
+    - ""
+
+resetquit:
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы <#d45079>успешно сбросили</#d45079> сообщение при выходе"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция сброса сообщений при выходе была <#d45079>заблокирована за нарушение правил</#d45079>!"
+    - ""

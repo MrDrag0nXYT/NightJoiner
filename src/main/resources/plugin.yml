@@ -1,0 +1,67 @@
+name: NightJoiner
+version: '1.0.0'
+main: zxc.MrDrag0nXYT.nightJoiner.NightJoiner
+api-version: '1.18'
+authors: [ MrDrag0nXYT (drakoshaslv) ]
+website: https://drakoshaslv.ru
+depend: [PlaceholderAPI]
+
+commands:
+  nightjoiner:
+    aliases:
+      - nj
+    usage: /<command>
+
+  setjoin:
+    usage: /<command> <text>
+  setquit:
+    usage: /<command> <text>
+  resetjoin:
+    usage: /<command> <text>
+  resetquit:
+    usage: /<command> <text>
+
+permissions:
+  nightjoiner.player.setjoin:
+    default: false
+  nightjoiner.player.setquit:
+    default: false
+
+  nightjoiner.player.broadcast.join:
+    default: false
+  nightjoiner.player.broadcast.quit:
+    default: false
+
+  nightjoiner.player.broadcastjoin:
+    default: false
+  nightjoiner.player.broadcastquit:
+    default: false
+
+  nightjoiner.admin.reload:
+    default: op
+  nightjoiner.admin.ban:
+    default: op
+  nightjoiner.admin.unban:
+    default: op
+
+  nightjoiner.*:
+    default: op
+    children:
+      nightjoiner.admin.*: true
+      nightjoiner.player.*: true
+
+  nightjoiner.admin.*:
+    default: op
+    children:
+      nightjoiner.admin.reload: true
+      nightjoiner.admin.ban: true
+      nightjoiner.admin.unban: true
+      nightjoiner.player.*: true
+
+  nightjoiner.player.*:
+    default: false
+    children:
+      nightjoiner.player.setjoin: true
+      nightjoiner.player.setquit: true
+      nightjoiner.player.broadcast.join: true
+      nightjoiner.player.broadcast.quit: true
