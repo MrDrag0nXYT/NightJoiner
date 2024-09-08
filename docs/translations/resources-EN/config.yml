@@ -1,0 +1,50 @@
+#
+#   ███╗░░██╗██╗░██████╗░██╗░░██╗████████╗░░░░░██╗░█████╗░██╗███╗░░██╗███████╗██████╗░
+#   ████╗░██║██║██╔════╝░██║░░██║╚══██╔══╝░░░░░██║██╔══██╗██║████╗░██║██╔════╝██╔══██╗
+#   ██╔██╗██║██║██║░░██╗░███████║░░░██║░░░░░░░░██║██║░░██║██║██╔██╗██║█████╗░░██████╔╝
+#   ██║╚████║██║██║░░╚██╗██╔══██║░░░██║░░░██╗░░██║██║░░██║██║██║╚████║██╔══╝░░██╔══██╗
+#   ██║░╚███║██║╚██████╔╝██║░░██║░░░██║░░░╚█████╔╝╚█████╔╝██║██║░╚███║███████╗██║░░██║
+#   ╚═╝░░╚══╝╚═╝░╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░░╚════╝░░╚════╝░╚═╝╚═╝░░╚══╝╚══════╝╚═╝░░╚═╝
+#
+#            V 1.0.0   |   Author: MrDrag0nXYT (https://drakoshaslv.ru)
+#             Source code: https://github.com/MrDrag0nXYT/NightJoiner
+#
+
+#
+# Database for storing custom join messages
+# Supports SQLITE; todo: other DBs
+#
+database:
+  type: SQLITE
+
+#
+# Join/quit and welcome messages format
+# Support:
+#   - MiniMessage (<#abcdef>) and Legacy (&#abcdef) formatting codes
+#   - PlaceholderAPI placeholders
+#
+messages:
+  show-in-console: true
+  join:
+    - ""
+    - " <#ace1af>+</#ace1af> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%"
+    - ""
+  quit:
+    - ""
+    - " <#d45079>-</#d45079> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%"
+    - ""
+
+  #
+  # Default join/quit messages if player not set
+  #
+  default:
+    join: "joined game"
+    quit: "leaved"
+
+  motd:
+    enabled: true
+    text:
+      - ""
+      - " <#fcfcfc>Добро пожаловать на наш сервер, <#745c97>%player_name%</#745c97>!"
+      - "  <#c0c0c0>‣ <#fcfcfc>Ваша группа: %luckperms_prefix%"
+      - ""

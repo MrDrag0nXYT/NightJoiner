@@ -1,0 +1,93 @@
+#
+# Messages of plugin
+# Support only MiniMessage format
+#
+
+global:
+  no-permission:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>You <#d45079>don't have permissions</#d45079> to perform this action"
+    - ""
+  not-player:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>you <#d45079>can't run</#d45079> this command from console!"
+    - ""
+  database-error:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>A <#d45079>database error occurred</#d45079> while performing action"
+    - ""
+
+nightjoiner:
+  usage:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Usage"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner reload'><#745c97>/nightjoiner reload</click> <#c0c0c0>- <#fcfcfc>reload plugin"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner ban'><#745c97>/nightjoiner ban <player></click> <#c0c0c0>- <#fcfcfc>ban player"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner unban'><#745c97>/nightjoiner unban <player></click> <#c0c0c0>- <#fcfcfc>unban player"
+    - ""
+  reloaded:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Plugin <#ace1af>successfully reloaded</#ace1af>!"
+    - ""
+  player-not-found:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Player <#745c97>%player%</#745c97> not found"
+    - ""
+  banned:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Player <#745c97>%player%</#745c97> <#d45079>banned</#d45079> from changing messages"
+    - ""
+  unbanned:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Player <#745c97>%player%</#745c97> <#ace1af>unbanned</#ace1af> from changing messages"
+    - ""
+
+setjoin:
+  usage:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Usage <#745c97>/setjoin</#745c97>:"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/setjoin'><#745c97>/setjoin <text></click> <#c0c0c0>- <#fcfcfc>set message for join"
+    - ""
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>You successfully changed join message to <#ace1af>%message%</#ace1af>"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Ability to changing join messages <#d45079>was blocked for violating server rules</#d45079>!"
+    - ""
+
+setquit:
+  usage:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Usage <#745c97>/setjoin</#745c97>:"
+    - "  <#c0c0c0>‣ <click:suggest_command:'/setquit'><#745c97>/setquit <text></click> <#c0c0c0>- <#fcfcfc>set message for quit"
+    - ""
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>You successfully changed quit message to <#d45079>%message%</#d45079>"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Ability to changing quit messages <#d45079>was blocked for violating server rules</#d45079>!"
+    - ""
+
+resetjoin:
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>You <#d45079>successfully reset</#d45079> your join message"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Ability to changing join messages <#d45079>was blocked for violating server rules</#d45079>!"
+    - ""
+
+resetquit:
+  success:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>You <#d45079>successfully reset</#d45079> your quit message"
+    - ""
+  blocked:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Ability to changing quit messages <#d45079>was blocked for violating server rules</#d45079>!"
+    - ""

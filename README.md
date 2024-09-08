@@ -50,6 +50,12 @@ Main plugin command
 - `nightjoiner.player.broadcast.join` - Broadcast player join
 - `nightjoiner.player.broadcast.quit` - Broadcast player quit
 
+# 🌐 Translations
+
+If you need alaready translated files, check [this](docs/translations/TRANSLATIONS.md)
+
+
+
 ***
 
 
