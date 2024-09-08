@@ -10,6 +10,9 @@
 #             Source code: https://github.com/MrDrag0nXYT/NightJoiner
 #
 
+# Enable BStats metrics? You can see it here: https://bstats.org/plugin/bukkit/NightJoiner/23311
+enable-metrics: true
+
 #
 # Database for storing custom join messages
 # Supports SQLITE; todo: other DBs

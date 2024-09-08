@@ -10,6 +10,7 @@ import zxc.MrDrag0nXYT.nightJoiner.util.config.Config;
 import zxc.MrDrag0nXYT.nightJoiner.util.config.Messages;
 import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseManager;
 import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseWorker;
+import zxc.MrDrag0nXYT.nightJoiner.util.metrics.BStatsMetrics;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,6 +39,10 @@ public final class NightJoiner extends JavaPlugin {
             databaseWorker.initTable(connection);
         } catch (SQLException e) {
             getLogger().severe(e.getMessage());
+        }
+
+        if (config.getConfig().getBoolean("enable-metrics")) {
+            BStatsMetrics metrics = new BStatsMetrics(this, 23311);
         }
 
         getCommand("nightjoiner").setExecutor(new MainCommand(this, config, messages, databaseManager));
