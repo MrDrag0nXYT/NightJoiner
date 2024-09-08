@@ -50,6 +50,10 @@
 - `nightjoiner.player.broadcast.join` - Оповещать о входе
 - `nightjoiner.player.broadcast.quit` - Оповещать о выходе
 
+# 🌐 Локализация
+
+Переводы на другие языки можно найти [здесь](docs/translations/TRANSLATIONS.md)
+
 
 
 ***
