@@ -66,6 +66,8 @@ public class Config {
     }
 
     private void updateConfig() {
+        checkConfigValue("enable-metrics", true);
+
         checkConfigValue("database.type", "SQLITE");
 
         checkConfigValue("messages.show-in-console", true);
