@@ -20,8 +20,8 @@ public class Utilities {
     public static Component setColorWithPlaceholders(Player player, String from) {
         return miniMessage.deserialize(
                 miniMessage.serialize(
-                                LegacyComponentSerializer.legacyAmpersand().deserialize(
-                                        PlaceholderAPI.setPlaceholders(player, from)
+                                LegacyComponentSerializer.legacySection().deserialize(
+                                        PlaceholderAPI.setPlaceholders(player, from).replace("&", "§")
                                 )
                         )
                         .replace("\\<", "<")
