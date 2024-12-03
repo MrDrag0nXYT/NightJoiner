@@ -6,10 +6,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import zxc.MrDrag0nXYT.nightJoiner.command.*;
 import zxc.MrDrag0nXYT.nightJoiner.listener.PlayerJoinQuitListener;
 import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.util.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.util.config.Messages;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseWorker;
+import zxc.MrDrag0nXYT.nightJoiner.config.Config;
+import zxc.MrDrag0nXYT.nightJoiner.config.Messages;
+import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
+import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
 import zxc.MrDrag0nXYT.nightJoiner.util.metrics.BStatsMetrics;
 
 import java.sql.Connection;

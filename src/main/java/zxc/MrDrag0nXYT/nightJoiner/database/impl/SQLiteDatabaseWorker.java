@@ -1,7 +1,7 @@
-package zxc.MrDrag0nXYT.nightJoiner.util.database.impl;
+package zxc.MrDrag0nXYT.nightJoiner.database.impl;
 
-import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseWorker;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.entity.UserRecord;
+import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
+import zxc.MrDrag0nXYT.nightJoiner.database.entity.UserRecord;
 import zxc.MrDrag0nXYT.nightJoiner.util.exception.UserRecordNotFound;
 
 import java.sql.Connection;

@@ -1,11 +1,11 @@
-package zxc.MrDrag0nXYT.nightJoiner.util.database;
+package zxc.MrDrag0nXYT.nightJoiner.database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.bukkit.configuration.file.YamlConfiguration;
 import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
-import zxc.MrDrag0nXYT.nightJoiner.util.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.impl.SQLiteDatabaseWorker;
+import zxc.MrDrag0nXYT.nightJoiner.config.Config;
+import zxc.MrDrag0nXYT.nightJoiner.database.impl.SQLiteDatabaseWorker;
 
 import java.io.File;
 import java.sql.Connection;

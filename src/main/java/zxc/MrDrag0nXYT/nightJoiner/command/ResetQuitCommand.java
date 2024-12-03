@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
 import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.util.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.util.config.Messages;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseWorker;
+import zxc.MrDrag0nXYT.nightJoiner.config.Config;
+import zxc.MrDrag0nXYT.nightJoiner.config.Messages;
+import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
+import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
 
 import java.sql.Connection;
 import java.sql.SQLException;

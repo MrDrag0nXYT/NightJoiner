@@ -6,7 +6,7 @@
 #   ██║░╚███║██║╚██████╔╝██║░░██║░░░██║░░░╚█████╔╝╚█████╔╝██║██║░╚███║███████╗██║░░██║
 #   ╚═╝░░╚══╝╚═╝░╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░░╚════╝░░╚════╝░╚═╝╚═╝░░╚══╝╚══════╝╚═╝░░╚═╝
 #
-#            V 1.0.0   |   Author: MrDrag0nXYT (https://drakoshaslv.ru)
+#                   Author: MrDrag0nXYT (https://drakoshaslv.ru)
 #             Source code: https://github.com/MrDrag0nXYT/NightJoiner
 #
 
@@ -19,6 +19,12 @@ enable-metrics: true
 #
 database:
   type: SQLITE
+
+#
+# Check that player is vanished
+# Works with SuperVanish, PremiumVanish and others plugins that support tag "vanished"
+#
+vanish-check: true
 
 #
 # Join/quit and welcome messages format

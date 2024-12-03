@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'zxc.MrDrag0nXYT'
-version = '1.0.2'
+version = '1.1.0'
 
 repositories {
     mavenCentral()
@@ -26,10 +26,10 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
 
-    implementation "com.zaxxer:HikariCP:5.1.0"
+    compileOnly "com.zaxxer:HikariCP:5.1.0"
 
-    implementation "net.kyori:adventure-api:4.17.0"
-    implementation "net.kyori:adventure-text-serializer-legacy:4.17.0"
+    compileOnly "net.kyori:adventure-api:4.17.0"
+    compileOnly "net.kyori:adventure-text-serializer-legacy:4.17.0"
 
     compileOnly "me.clip:placeholderapi:2.11.6"
 }

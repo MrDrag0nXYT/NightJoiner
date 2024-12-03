@@ -1,4 +1,4 @@
-package zxc.MrDrag0nXYT.nightJoiner.util.config;
+package zxc.MrDrag0nXYT.nightJoiner.config;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
@@ -59,7 +59,7 @@ public class Config {
      * Checking config values
      */
 
-    private void checkConfigValue(String key, Object defaultValue) {
+    private <T> void checkConfigValue(String key, T defaultValue) {
         if (!config.contains(key)) {
             config.set(key, defaultValue);
         }
@@ -69,6 +69,7 @@ public class Config {
         checkConfigValue("enable-metrics", true);
 
         checkConfigValue("database.type", "SQLITE");
+        checkConfigValue("vanish-check", true);
 
         checkConfigValue("messages.show-in-console", true);
         checkConfigValue("messages.join", List.of("", " <#ace1af>+</#ace1af> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%", ""));

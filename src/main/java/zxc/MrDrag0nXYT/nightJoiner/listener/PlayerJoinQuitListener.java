@@ -11,9 +11,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
 import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.util.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.util.database.DatabaseWorker;
+import zxc.MrDrag0nXYT.nightJoiner.config.Config;
+import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
+import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -62,6 +62,12 @@ public class PlayerJoinQuitListener implements Listener {
     private void broadcast(PlayerEvent event, YamlConfiguration yamlConfiguration, boolean isJoin) {
         String isJoinPath = isJoin ? "join" : "quit";
         Player player = event.getPlayer();
+
+        if (yamlConfiguration.getBoolean("vanish-check", false)) {
+            if (Utilities.isVanished(player)) {
+                return;
+            }
+        }
 
         if (player.hasPermission("nightjoiner.player.broadcast." + isJoinPath)) {
 

@@ -1,4 +1,4 @@
-package zxc.MrDrag0nXYT.nightJoiner.util.config;
+package zxc.MrDrag0nXYT.nightJoiner.config;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;

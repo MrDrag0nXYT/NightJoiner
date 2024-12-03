@@ -1,4 +1,4 @@
-package zxc.MrDrag0nXYT.nightJoiner.util.database.entity;
+package zxc.MrDrag0nXYT.nightJoiner.database.entity;
 
 import java.util.UUID;
 

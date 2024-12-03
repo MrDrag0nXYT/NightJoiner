@@ -4,7 +4,12 @@ main: zxc.MrDrag0nXYT.nightJoiner.NightJoiner
 api-version: '1.18'
 authors: [ MrDrag0nXYT (drakoshaslv) ]
 website: https://drakoshaslv.ru
-depend: [PlaceholderAPI]
+depend: [ PlaceholderAPI ]
+
+libraries:
+  - "com.zaxxer:HikariCP:5.1.0"
+  - "net.kyori:adventure-api:4.17.0"
+  - "net.kyori:adventure-text-serializer-legacy:4.17.0"
 
 commands:
   nightjoiner:
