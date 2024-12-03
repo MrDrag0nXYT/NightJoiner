@@ -1,113 +1,253 @@
-package zxc.MrDrag0nXYT.nightJoiner.config;
+package zxc.mrdrag0nxyt.nightJoiner.config
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
+import org.bukkit.configuration.file.YamlConfiguration
+import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
+import java.io.File
 
-import java.io.File;
-import java.util.List;
+class Messages(private val plugin: NightJoiner) {
+    private val fileName = "messages.yml"
+    private var file = File(plugin.dataFolder, fileName)
+    private var config = init()
 
-public class Messages {
+    var globalNoPermission = listOf("")
+        private set
+    var globalNotPlayer = listOf("")
+        private set
+    var globalDatabaseError = listOf("")
+        private set
 
-    private final NightJoiner plugin;
+    var mainUsage = listOf("")
+        private set
+    var mainReloaded = listOf("")
+        private set
+    var mainTargetNotFound = listOf("")
+        private set
+    var mainTargetBanned = listOf("")
+        private set
+    var mainTargetUnbanned = listOf("")
+        private set
 
-    private final String fileName;
-    private File file;
-    private YamlConfiguration config;
+    var setJoinUsage = listOf("")
+        private set
+    var setJoinSuccess = listOf("")
+        private set
+    var setJoinBlocked = listOf("")
+        private set
 
-    public Messages(NightJoiner plugin) {
-        this.plugin = plugin;
-        this.fileName = "messages.yml";
+    var setQuitUsage = listOf("")
+        private set
+    var setQuitSuccess = listOf("")
+        private set
+    var setQuitBlocked = listOf("")
+        private set
 
-        init();
-        updateConfig();
+    var resetJoinSuccess = listOf("")
+        private set
+    var resetJoinBlocked = listOf("")
+        private set
+
+    var resetQuitSuccess = listOf("")
+        private set
+    var resetQuitBlocked = listOf("")
+        private set
+
+    init {
+        updateConfig()
     }
 
-    private void init() {
-        file = new File(plugin.getDataFolder(), fileName);
+    private fun extractIfNotExist() {
         if (!file.exists()) {
-            plugin.saveResource(fileName, false);
+            plugin.saveResource(fileName, false)
         }
-        config = YamlConfiguration.loadConfiguration(file);
     }
 
-    public void reload() {
-        if (!file.exists()) {
-            plugin.saveResource(fileName, false);
-        }
+    private fun init(): YamlConfiguration {
+        extractIfNotExist()
+        return YamlConfiguration.loadConfiguration(file)
+    }
+
+    fun reload() {
+        extractIfNotExist()
         try {
-            config.load(file);
-        } catch (Exception e) {
-            plugin.getLogger().severe(String.valueOf(e));
+            config.load(file)
+        } catch (e: Exception) {
+            plugin.logger.severe(e.toString())
         }
     }
 
-    public void save() {
+    fun save() {
         try {
-            config.save(file);
-        } catch (Exception e) {
-            plugin.getLogger().severe(String.valueOf(e));
+            config.save(file)
+        } catch (e: Exception) {
+            plugin.logger.severe(e.toString())
         }
     }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
-
 
 
     /*
-     * Checking config values
-     */
+    * Checking config values
+    */
 
-    private void checkConfigValue(String key, Object defaultValue) {
+    private fun <T> checkConfigValue(key: String, value: T): T {
         if (!config.contains(key)) {
-            config.set(key, defaultValue);
+            config.set(key, value)
         }
+        return value
     }
 
-    private void updateConfig() {
-        checkConfigValue("global.no-permission", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>У вас <#d45079>недостаточно прав</#d45079> для выполнения этого действия", ""));
-        checkConfigValue("global.not-player", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Эта команда <#d45079>недоступна</#d45079> для выполнения из консоли", ""));
-        checkConfigValue("global.database-error", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>При выполнении действия <#d45079>произошла ошибка</#d45079> в базе данных", ""));
+    private fun updateConfig() {
+        globalNoPermission = checkConfigValue(
+            "global.no-permission",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>У вас <#d45079>недостаточно прав</#d45079> для выполнения этого действия",
+                ""
+            )
+        )
+        globalNotPlayer = checkConfigValue(
+            "global.not-player",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Эта команда <#d45079>недоступна</#d45079> для выполнения из консоли",
+                ""
+            )
+        )
+        globalDatabaseError = checkConfigValue(
+            "global.database-error",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>При выполнении действия <#d45079>произошла ошибка</#d45079> в базе данных",
+                ""
+            )
+        )
 
-        checkConfigValue("nightjoiner.usage", List.of(
+        mainUsage = checkConfigValue(
+            "nightjoiner.usage", listOf(
                 "",
                 " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Информация",
                 "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner reload'><#745c97>/nightjoiner reload</click> <#c0c0c0>- <#fcfcfc>перезагрузить плагин",
                 "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner ban'><#745c97>/nightjoiner ban <ник></click> <#c0c0c0>- <#fcfcfc>заблокировать игрока",
                 "  <#c0c0c0>‣ <click:suggest_command:'/nightjoiner unban'><#745c97>/nightjoiner unban <ник></click> <#c0c0c0>- <#fcfcfc>разблокировать игрока",
                 ""
-        ));
-        checkConfigValue("nightjoiner.reloaded", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Плагин <#ace1af>успешно перезагружен</#ace1af>", ""));
-        checkConfigValue("nightjoiner.player-not-found", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игрок <#745c97>%player%</#745c97> не найден", ""));
-        checkConfigValue("nightjoiner.banned", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#d45079>заблокирована</#d45079> возможность установки сообщений", ""));
-        checkConfigValue("nightjoiner.unbanned", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#ace1af>разблокирована</#ace1af> возможность установки сообщений", ""));
+            )
+        )
+        mainReloaded = checkConfigValue(
+            "nightjoiner.reloaded",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Плагин <#ace1af>успешно перезагружен</#ace1af>",
+                ""
+            )
+        )
+        mainTargetNotFound = checkConfigValue(
+            "nightjoiner.player-not-found",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игрок <#745c97>%player%</#745c97> не найден",
+                ""
+            )
+        )
+        mainTargetBanned = checkConfigValue(
+            "nightjoiner.banned",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#d45079>заблокирована</#d45079> возможность установки сообщений",
+                ""
+            )
+        )
+        mainTargetUnbanned = checkConfigValue(
+            "nightjoiner.unbanned",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#ace1af>разблокирована</#ace1af> возможность установки сообщений",
+                ""
+            )
+        )
 
-        checkConfigValue("setjoin.usage", List.of(
+        setJoinUsage = checkConfigValue(
+            "setjoin.usage", listOf(
                 "",
                 " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Использование <#745c97>/setjoin</#745c97>:",
                 "  <#c0c0c0>‣ <click:suggest_command:'/setjoin'><#745c97>/setjoin <текст></click> <#c0c0c0>- <#fcfcfc>установить текст сообщения при входе",
                 ""
-        ));
-        checkConfigValue("setjoin.success", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы установили сообщение входа на <#ace1af>%message%</#ace1af>", ""));
-        checkConfigValue("setjoin.blocked", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция установки сообщений при входе была <#d45079>заблокирована за нарушение правил</#d45079>!", ""));
+            )
+        )
+        setJoinSuccess = checkConfigValue(
+            "setjoin.success",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы установили сообщение входа на <#ace1af>%message%</#ace1af>",
+                ""
+            )
+        )
+        setJoinBlocked = checkConfigValue(
+            "setjoin.blocked",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция установки сообщений при входе была <#d45079>заблокирована за нарушение правил</#d45079>!",
+                ""
+            )
+        )
 
-        checkConfigValue("setquit.usage", List.of(
+        setQuitUsage = checkConfigValue(
+            "setquit.usage", listOf(
                 "",
                 " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Использование <#745c97>/setjoin</#745c97>:",
                 "  <#c0c0c0>‣ <click:suggest_command:'/setquit'><#745c97>/setquit <текст></click> <#c0c0c0>- <#fcfcfc>установить текст сообщения при выходе",
                 ""
-        ));
-        checkConfigValue("setquit.success", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы установили сообщение выхода на <#d45079>%message%</#d45079>", ""));
-        checkConfigValue("setquit.blocked", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция установки сообщений при выходе была <#d45079>заблокирована за нарушение правил</#d45079>!", ""));
+            )
+        )
+        setQuitSuccess = checkConfigValue(
+            "setquit.success",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы установили сообщение выхода на <#d45079>%message%</#d45079>",
+                ""
+            )
+        )
+        setQuitBlocked = checkConfigValue(
+            "setquit.blocked",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция установки сообщений при выходе была <#d45079>заблокирована за нарушение правил</#d45079>!",
+                ""
+            )
+        )
 
-        checkConfigValue("resetjoin.success", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы <#d45079>успешно сбросили</#d45079> сообщение при входе", ""));
-        checkConfigValue("resetjoin.blocked", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция сброса сообщений при входе была <#d45079>заблокирована за нарушение правил</#d45079>!", ""));
+        resetJoinSuccess = checkConfigValue(
+            "resetjoin.success",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы <#d45079>успешно сбросили</#d45079> сообщение при входе",
+                ""
+            )
+        )
+        resetJoinBlocked = checkConfigValue(
+            "resetjoin.blocked",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция сброса сообщений при входе была <#d45079>заблокирована за нарушение правил</#d45079>!",
+                ""
+            )
+        )
 
-        checkConfigValue("resetquit.success", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы <#d45079>успешно сбросили</#d45079> сообщение при выходе", ""));
-        checkConfigValue("resetquit.blocked", List.of("", " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция сброса сообщений при выходе была <#d45079>заблокирована за нарушение правил</#d45079>!", ""));
+        resetQuitSuccess = checkConfigValue(
+            "resetquit.success",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Вы <#d45079>успешно сбросили</#d45079> сообщение при выходе",
+                ""
+            )
+        )
+        resetQuitBlocked = checkConfigValue(
+            "resetquit.blocked",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Функция сброса сообщений при выходе была <#d45079>заблокирована за нарушение правил</#d45079>!",
+                ""
+            )
+        )
 
-        save();
+        save()
     }
-
 }

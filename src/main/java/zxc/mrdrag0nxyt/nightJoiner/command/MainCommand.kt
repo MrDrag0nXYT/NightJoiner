@@ -1,180 +1,143 @@
-package zxc.MrDrag0nXYT.nightJoiner.command;
+package zxc.mrdrag0nxyt.nightJoiner.command
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
-import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.config.Messages;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
-import zxc.MrDrag0nXYT.nightJoiner.util.exception.UserRecordNotFound;
+import org.bukkit.Bukkit
+import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
+import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
+import zxc.mrdrag0nxyt.nightJoiner.config.Config
+import zxc.mrdrag0nxyt.nightJoiner.config.Messages
+import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
+import zxc.mrdrag0nxyt.nightJoiner.util.Utilities
+import zxc.mrdrag0nxyt.nightJoiner.util.exception.UserRecordNotFound
+import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
+import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessageWithPlaceholders
+import java.sql.SQLException
+import java.util.*
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
+class MainCommand(
+    private val plugin: NightJoiner,
+    private val config: Config,
+    private val messages: Messages,
+    private val databaseManager: DatabaseManager
+) :
+    CommandExecutor, TabCompleter {
+    override fun onCommand(commandSender: CommandSender, command: Command, s: String, strings: Array<String>): Boolean {
 
-public class MainCommand implements CommandExecutor, TabCompleter {
-
-    private final NightJoiner plugin;
-    private Config config;
-    private Messages messages;
-    private DatabaseManager databaseManager;
-
-    public MainCommand(NightJoiner plugin, Config config, Messages messages, DatabaseManager databaseManager) {
-        this.plugin = plugin;
-        this.config = config;
-        this.messages = messages;
-        this.databaseManager = databaseManager;
-    }
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-
-        YamlConfiguration messagesConfig = this.messages.getConfig();
-
-        if (strings.length == 0) {
-            for (String string : messagesConfig.getStringList("nightjoiner.usage")) {
-                commandSender.sendMessage(
-                        Utilities.setColor(string)
-                );
+        if (strings.isEmpty()) {
+            for (string in messages.mainUsage) {
+                commandSender.sendColoredMessage(string)
             }
-            return true;
+            return true
         }
 
-        DatabaseWorker databaseWorker = databaseManager.getDatabaseWorker();
+        val databaseWorker = databaseManager.databaseWorker
 
-        switch (strings[0].toLowerCase()) {
-
-            case "ban" -> {
+        when (strings[0].lowercase(Locale.getDefault())) {
+            "ban" -> {
                 if (commandSender.hasPermission("nightjoiner.admin.ban")) {
-                    if (strings.length == 2) {
-                        try (Connection connection = databaseManager.getConnection()) {
-                            databaseWorker.resetMessages(connection, Bukkit.getOfflinePlayer(strings[1]).getUniqueId(), strings[1]);
-                            databaseWorker.setBlockStatus(connection, strings[1], 1);
-
-                            for (String string : messagesConfig.getStringList("nightjoiner.banned")) {
-                                commandSender.sendMessage(
-                                        Utilities.setColor(
-                                                string.replace("%player%", strings[1])
-                                        )
-                                );
+                    if (strings.size == 2) {
+                        try {
+                            databaseManager.getConnection().use { connection ->
+                                databaseWorker?.resetMessages(
+                                    connection!!, Bukkit.getOfflinePlayer(strings[1]).uniqueId,
+                                    strings[1]
+                                )
+                                databaseWorker?.setBlockStatus(connection!!, strings[1], 1)
+                                for (string in messages.mainTargetBanned) {
+                                    commandSender.sendColoredMessageWithPlaceholders(
+                                        string, mapOf("player" to strings[1])
+                                    )
+                                }
                             }
-
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                            for (String string : messagesConfig.getStringList("global.database-error")) {
-                                commandSender.sendMessage(
-                                        Utilities.setColor(string)
-                                );
+                        } catch (e: SQLException) {
+                            e.printStackTrace()
+                            for (string in messages.globalDatabaseError) {
+                                commandSender.sendColoredMessage(string)
                             }
-
-                        } catch (UserRecordNotFound e) {
-                            for (String string : messagesConfig.getStringList("nightjoiner.player-not-found")) {
-                                commandSender.sendMessage(
-                                        Utilities.setColor(
-                                                string.replace("%player%", strings[1])
-                                        )
-                                );
+                        } catch (e: UserRecordNotFound) {
+                            for (string in messages.mainTargetNotFound) {
+                                commandSender.sendColoredMessageWithPlaceholders(
+                                    string, mapOf("player" to strings[1])
+                                )
                             }
                         }
                     }
-
                 } else {
-                    for (String string : messagesConfig.getStringList("global.no-permission")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(string)
-                        );
+                    for (string in messages.globalNoPermission) {
+                        commandSender.sendColoredMessage(string)
                     }
                 }
             }
 
-            case "unban" -> {
+            "unban" -> {
                 if (commandSender.hasPermission("nightjoiner.admin.unban")) {
-                    if (strings.length == 2) {
-                        try (Connection connection = databaseManager.getConnection()) {
-                            databaseWorker.setBlockStatus(connection, strings[1], 0);
-
-                            for (String string : messagesConfig.getStringList("nightjoiner.unbanned")) {
-                                commandSender.sendMessage(
-                                        Utilities.setColor(
-                                                string.replace("%player%", strings[1])
-                                        )
-                                );
+                    if (strings.size == 2) {
+                        try {
+                            databaseManager.getConnection().use { connection ->
+                                databaseWorker!!.setBlockStatus(connection!!, strings[1], 0)
+                                for (string in messages.mainTargetUnbanned) {
+                                    commandSender.sendColoredMessageWithPlaceholders(
+                                        string, mapOf("player" to strings[1])
+                                    )
+                                }
                             }
-
-                        } catch (SQLException e) {
-                            e.printStackTrace();
-                            for (String string : messagesConfig.getStringList("global.database-error")) {
-                                commandSender.sendMessage(
-                                        Utilities.setColor(string)
-                                );
+                        } catch (e: SQLException) {
+                            e.printStackTrace()
+                            for (string in messages.globalDatabaseError) {
+                                commandSender.sendColoredMessage(string)
                             }
-
-                        } catch (UserRecordNotFound e) {
-                            for (String string : messagesConfig.getStringList("global.player-not-found")) {
-                                commandSender.sendMessage(
-                                        Utilities.setColor(
-                                                string.replace("%player%", strings[1])
-                                        )
-                                );
+                        } catch (e: UserRecordNotFound) {
+                            for (string in messages.mainTargetNotFound) {
+                                commandSender.sendColoredMessageWithPlaceholders(
+                                    string, mapOf("player" to strings[1])
+                                )
                             }
                         }
                     }
-
                 } else {
-                    for (String string : messagesConfig.getStringList("global.no-permission")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(string)
-                        );
+                    for (string in messages.globalNoPermission) {
+                        commandSender.sendColoredMessage(string)
                     }
                 }
             }
 
-            case "reload" -> {
+            "reload" -> {
                 if (commandSender.hasPermission("nightjoiner.admin.reload")) {
-                    plugin.reload();
-                    for (String string : messagesConfig.getStringList("nightjoiner.reloaded")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(string)
-                        );
+                    plugin.reload()
+                    for (string in messages.mainReloaded) {
+                        commandSender.sendColoredMessage(string)
                     }
-
                 } else {
-                    for (String string : messagesConfig.getStringList("global.no-permission")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(string)
-                        );
+                    for (string in messages.globalNoPermission) {
+                        commandSender.sendColoredMessage(string)
                     }
                 }
             }
 
-            default -> {
-                for (String string : messagesConfig.getStringList("nightjoiner.usage")) {
-                    commandSender.sendMessage(
-                            Utilities.setColor(string)
-                    );
+            else -> {
+                for (string in messages.mainUsage) {
+                    commandSender.sendColoredMessage(string)
                 }
             }
         }
 
-        return true;
+        return true
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        if (strings.length == 1) {
-            return List.of("ban", "unban", "reload", "help");
-        } else if (strings.length == 2) {
-            return null;
+    override fun onTabComplete(
+        commandSender: CommandSender,
+        command: Command,
+        s: String,
+        strings: Array<String>
+    ): List<String>? {
+        if (strings.size == 1) {
+            return listOf("ban", "unban", "reload", "help")
+        } else if (strings.size == 2) {
+            return null
         }
 
-        return List.of();
+        return listOf()
     }
 }

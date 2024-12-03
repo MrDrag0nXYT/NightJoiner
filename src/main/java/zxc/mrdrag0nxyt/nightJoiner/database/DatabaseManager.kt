@@ -1,59 +1,66 @@
-package zxc.MrDrag0nXYT.nightJoiner.database;
+package zxc.mrdrag0nxyt.nightJoiner.database
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.bukkit.configuration.file.YamlConfiguration;
-import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
-import zxc.MrDrag0nXYT.nightJoiner.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.database.impl.SQLiteDatabaseWorker;
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
+import zxc.mrdrag0nxyt.nightJoiner.config.DatabaseConfigEntity
+import zxc.mrdrag0nxyt.nightJoiner.config.DatabaseType
+import zxc.mrdrag0nxyt.nightJoiner.database.impl.SQLiteDatabaseWorker
+import java.io.File
+import java.sql.Connection
+import java.sql.SQLException
+import java.util.*
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
+class DatabaseManager(
+    private val plugin: NightJoiner,
+    databaseType: DatabaseType,
+    databaseConfig: DatabaseConfigEntity?
+) {
 
-public class DatabaseManager {
+    private var datasource: HikariDataSource? = null
+    var databaseWorker: DatabaseWorker? = null
+        private set
 
-    private final NightJoiner plugin;
-    private HikariDataSource dataSource;
-    private DatabaseWorker databaseWorker;
-
-    public DatabaseManager(NightJoiner plugin, Config config) {
-        this.plugin = plugin;
-        YamlConfiguration pluginConfig = config.getConfig();
-
-        updateConnection(pluginConfig);
+    init {
+        updateConnection(databaseType, databaseConfig)
     }
 
-    public void updateConnection(YamlConfiguration pluginConfig) {
-        closeConnection();
+    fun updateConnection(databaseType: DatabaseType, databaseConfig: DatabaseConfigEntity?) {
+        closeConnection()
+        val hikariConfig = HikariConfig()
 
-        HikariConfig hikariConfig = new HikariConfig();
+        val dbTypeFallback = if (databaseConfig == null) DatabaseType.SQLITE else databaseType
 
-        switch (pluginConfig.getString("database.type", "sqlite").toLowerCase()) {
-            // todo mysql, ...
+        when (dbTypeFallback) {
+//            todo: mysql
 
-            default -> {
-                hikariConfig.setJdbcUrl("jdbc:sqlite:" + plugin.getDataFolder() + File.separator + "database.db");
-                databaseWorker = new SQLiteDatabaseWorker();
+//            DatabaseType.MYSQL -> {
+//                hikariConfig.apply {
+//                    jdbcUrl = "jdbc:mysql://${databaseConfig?.host}:${databaseConfig?.port}/${databaseConfig?.database}"
+//                    username = databaseConfig?.username
+//                    password = databaseConfig?.password
+//                }
+//                databaseWorker = MySQLDatabaseWorker()
+//            }
+
+            else -> {
+                hikariConfig.apply {
+                    jdbcUrl = "jdbc:sqlite:${plugin.dataFolder}${File.separator}database.db"
+                    driverClassName = "org.sqlite.JDBC"
+                }
+                databaseWorker = SQLiteDatabaseWorker()
             }
-
         }
-
-        dataSource = new HikariDataSource(hikariConfig);
+        datasource = HikariDataSource(hikariConfig)
     }
 
-    public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+    @Throws(SQLException::class)
+    fun getConnection(): Connection? {
+        return datasource?.connection
     }
 
-    public DatabaseWorker getDatabaseWorker() {
-        return databaseWorker;
+    fun closeConnection() {
+        datasource?.close()
+        datasource = null
     }
-
-    public void closeConnection() {
-        if (dataSource != null) {
-            dataSource.close();
-        }
-    }
-
 }

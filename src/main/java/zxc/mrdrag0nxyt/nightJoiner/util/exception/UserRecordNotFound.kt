@@ -1,4 +1,3 @@
-package zxc.MrDrag0nXYT.nightJoiner.util.exception;
+package zxc.mrdrag0nxyt.nightJoiner.util.exception
 
-public class UserRecordNotFound extends Exception {
-}
+class UserRecordNotFound : Exception()

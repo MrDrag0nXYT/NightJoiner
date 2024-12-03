@@ -1,115 +1,101 @@
-package zxc.MrDrag0nXYT.nightJoiner.listener;
+package zxc.mrdrag0nxyt.nightJoiner.listener
 
-import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
-import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
+import net.kyori.adventure.text.Component
+import org.bukkit.Bukkit
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerQuitEvent
+import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
+import zxc.mrdrag0nxyt.nightJoiner.config.Config
+import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
+import zxc.mrdrag0nxyt.nightJoiner.util.Utilities
+import java.sql.SQLException
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
-public class PlayerJoinQuitListener implements Listener {
-
-    private final NightJoiner plugin;
-    private Config config;
-    private DatabaseManager databaseManager;
-
-    public PlayerJoinQuitListener(NightJoiner plugin, Config config, DatabaseManager databaseManager) {
-        this.plugin = plugin;
-        this.config = config;
-        this.databaseManager = databaseManager;
-    }
-
+class PlayerJoinQuitListener(
+    private val plugin: NightJoiner,
+    private val config: Config,
+    private val databaseManager: DatabaseManager
+) :
+    Listener {
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        event.setJoinMessage(null);
+    fun onPlayerJoin(event: PlayerJoinEvent) {
+        event.joinMessage(null)
 
-        YamlConfiguration yamlConfiguration = config.getConfig();
+        if (config.isMotdEnabled) {
+            val player = event.player
 
-        if (yamlConfiguration.getBoolean("messages.motd.enabled", false)) {
-            Player player = event.getPlayer();
-
-            for (String string : yamlConfiguration.getStringList("messages.motd.text")) {
+            for (string in config.motd) {
                 player.sendMessage(
-                        Utilities.setColorWithPlaceholders(player, string)
-                );
+                    Utilities.setColorWithPlaceholders(player, string)
+                )
             }
         }
 
-        broadcast(event, yamlConfiguration, true);
+        broadcast(event, config, true)
     }
 
     @EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        event.setQuitMessage(null);
-        YamlConfiguration yamlConfiguration = config.getConfig();
-
-        broadcast(event, yamlConfiguration, false);
+    fun onPlayerQuit(event: PlayerQuitEvent) {
+        event.quitMessage(null)
+        broadcast(event, config, false)
     }
 
-    private void broadcast(PlayerEvent event, YamlConfiguration yamlConfiguration, boolean isJoin) {
-        String isJoinPath = isJoin ? "join" : "quit";
-        Player player = event.getPlayer();
+    private fun broadcast(event: PlayerEvent, config: Config, isJoin: Boolean) {
+        val isJoinPath = if (isJoin) "join" else "quit"
+        val player = event.player
 
-        if (yamlConfiguration.getBoolean("vanish-check", false)) {
+        if (config.isVanishCheckEnabled) {
             if (Utilities.isVanished(player)) {
-                return;
+                return
             }
         }
 
-        if (player.hasPermission("nightjoiner.player.broadcast." + isJoinPath)) {
+        if (player.hasPermission("nightjoiner.player.broadcast.$isJoinPath")) {
+            val databaseWorker = databaseManager.databaseWorker
 
-            DatabaseWorker databaseWorker = databaseManager.getDatabaseWorker();
+            var eventMessage: String? = null
 
-            String eventMessage = null;
-
-            try (Connection connection = databaseManager.getConnection()) {
-                if (isJoin) {
-                    eventMessage = databaseWorker.getJoinMessage(connection, player.getUniqueId(), player.getName());
-                } else {
-                    eventMessage = databaseWorker.getQuitMessage(connection, player.getUniqueId(), player.getName());
+            try {
+                databaseManager.getConnection().use { connection ->
+                    eventMessage = if (isJoin) {
+                        databaseWorker!!.getJoinMessage(connection!!, player.uniqueId, player.name)
+                    } else {
+                        databaseWorker!!.getQuitMessage(connection!!, player.uniqueId, player.name)
+                    }
                 }
-            } catch (SQLException e) {
-                Bukkit.getLogger().severe(String.valueOf(e));
+            } catch (e: SQLException) {
+                Bukkit.getLogger().severe(e.toString())
             }
 
             if (eventMessage == null) {
-                eventMessage = yamlConfiguration.getString("messages.default." + isJoinPath);
+                eventMessage = if (isJoin) config.defaultJoinMessage else config.defaultQuitMessage
             }
 
-            List<Component> messages = new ArrayList<>();
-            for (String string : yamlConfiguration.getStringList("messages." + isJoinPath)) {
-                messages.add(Utilities.setColorWithPlaceholders(
-                                player,
-                                string.replace("%player_text%", eventMessage)
-                        )
-                );
+            val messages: MutableList<Component> = ArrayList()
+            val template = if (isJoin) config.joinMessageTemplate else config.quitMessageTemplate
+
+            for (string in template) {
+                messages.add(
+                    Utilities.setColorWithPlaceholders(
+                        player,
+                        string.replace("%player_text%", eventMessage!!)
+                    )
+                )
             }
 
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                for (Component component : messages) {
-                    onlinePlayer.sendMessage(component);
+            for (onlinePlayer in Bukkit.getOnlinePlayers()) {
+                for (component in messages) {
+                    onlinePlayer.sendMessage(component)
                 }
             }
 
-            if (yamlConfiguration.getBoolean("messages.show-in-console")) {
-                for (Component component : messages) {
-                    Bukkit.getConsoleSender().sendMessage(component);
+            if (config.showInConsole) {
+                for (component in messages) {
+                    Bukkit.getConsoleSender().sendMessage(component)
                 }
             }
-
         }
     }
 }

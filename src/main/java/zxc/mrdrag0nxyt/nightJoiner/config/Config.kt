@@ -1,87 +1,150 @@
-package zxc.MrDrag0nXYT.nightJoiner.config;
+package zxc.mrdrag0nxyt.nightJoiner.config
 
-import org.bukkit.configuration.file.YamlConfiguration;
-import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
+import org.bukkit.configuration.file.YamlConfiguration
+import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
+import java.io.File
 
-import java.io.File;
-import java.util.List;
+class Config(private val plugin: NightJoiner) {
+    private val fileName = "config.yml"
+    private var file = File(plugin.dataFolder, fileName)
+    private var config = init()
 
-public class Config {
+    var metricsEnabled = true
+        private set
+    var isVanishCheckEnabled = true
+        private set
+    var showInConsole = true
+        private set
 
-    private final NightJoiner plugin;
+    var databaseType = DatabaseType.SQLITE
+        private set
+    var databaseConfig: DatabaseConfigEntity? = null
+        private set
 
-    private final String fileName;
-    private File file;
-    private YamlConfiguration config;
+    var joinMessageTemplate = listOf("")
+        private set
+    var quitMessageTemplate = listOf("")
+        private set
 
-    public Config(NightJoiner plugin) {
-        this.plugin = plugin;
-        this.fileName = "config.yml";
+    var defaultJoinMessage = ""
+        private set
+    var defaultQuitMessage = ""
+        private set
 
-        init();
-        updateConfig();
+    var isMotdEnabled = true
+        private set
+    var motd = listOf("")
+        private set
+
+    init {
+        updateConfig()
     }
 
-    private void init() {
-        file = new File(plugin.getDataFolder(), fileName);
+    private fun extractIfNotExist() {
         if (!file.exists()) {
-            plugin.saveResource(fileName, false);
+            plugin.saveResource(fileName, false)
         }
-        config = YamlConfiguration.loadConfiguration(file);
     }
 
-    public void reload() {
-        if (!file.exists()) {
-            plugin.saveResource(fileName, false);
-        }
+    private fun init(): YamlConfiguration {
+        extractIfNotExist()
+        return YamlConfiguration.loadConfiguration(file)
+    }
+
+    fun reload() {
+        extractIfNotExist()
         try {
-            config.load(file);
-        } catch (Exception e) {
-            plugin.getLogger().severe(String.valueOf(e));
+            config.load(file)
+        } catch (e: Exception) {
+            plugin.logger.severe(e.toString())
         }
     }
 
-    public void save() {
+    fun save() {
         try {
-            config.save(file);
-        } catch (Exception e) {
-            plugin.getLogger().severe(String.valueOf(e));
+            config.save(file)
+        } catch (e: Exception) {
+            plugin.logger.severe(e.toString())
         }
     }
-
-    public YamlConfiguration getConfig() {
-        return config;
-    }
-
 
 
     /*
-     * Checking config values
-     */
+    * Checking config values
+    */
 
-    private <T> void checkConfigValue(String key, T defaultValue) {
+    private fun <T> checkConfigValue(key: String, value: T): T {
         if (!config.contains(key)) {
-            config.set(key, defaultValue);
+            config.set(key, value)
         }
+        return value
     }
 
-    private void updateConfig() {
-        checkConfigValue("enable-metrics", true);
+    private fun updateConfig() {
+        metricsEnabled = checkConfigValue("enable-metrics", true)
 
-        checkConfigValue("database.type", "SQLITE");
-        checkConfigValue("vanish-check", true);
+        databaseType = DatabaseType.fromStringType(
+            checkConfigValue("database.type", config.getString("database.type", "SQLITE")!!)
+        )
+        if (databaseType != DatabaseType.SQLITE) {
+            databaseConfig = DatabaseConfigEntity(
+                host = checkConfigValue(
+                    "database.host",
+                    config.getString("database.host", "localhost")!!
+                ),
+                port = checkConfigValue(
+                    "database.port",
+                    config.getInt("database.port", 3306)
+                ),
+                username = checkConfigValue(
+                    "database.username",
+                    config.getString("database.username", "notavailable")!!
+                ),
+                password = checkConfigValue(
+                    "database.password",
+                    config.getString("database.password", "notavailable")!!
+                ),
+                database = checkConfigValue(
+                    "database.name",
+                    config.getString("database.database", "ncr")!!
+                ),
+            )
+        }
 
-        checkConfigValue("messages.show-in-console", true);
-        checkConfigValue("messages.join", List.of("", " <#ace1af>+</#ace1af> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%", ""));
-        checkConfigValue("messages.quit", List.of("", " <#d45079>-</#d45079> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%", ""));
+        isVanishCheckEnabled = checkConfigValue("vanish-check", true)
 
-        checkConfigValue("messages.default.join", "joined game");
-        checkConfigValue("messages.default.quit", "leaved");
+        showInConsole = checkConfigValue("messages.show-in-console", true)
+        joinMessageTemplate = checkConfigValue(
+            "messages.join",
+            listOf(
+                "",
+                " <#ace1af>+</#ace1af> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%",
+                ""
+            )
+        )
+        quitMessageTemplate = checkConfigValue(
+            "messages.quit",
+            listOf(
+                "",
+                " <#d45079>-</#d45079> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%",
+                ""
+            )
+        )
 
-        checkConfigValue("messages.motd.enabled", false);
-        checkConfigValue("messages.motd.text", List.of("", " <#fcfcfc>Welcome, <#745c97>%player_name%</#745c97>!", " <#c0c0c0>‣ <#fcfcfc>Your group: %luckperms_prefix%", ""));
+        defaultJoinMessage = checkConfigValue("messages.default.join", "joined game")
+        defaultQuitMessage = checkConfigValue("messages.default.quit", "leaved")
 
-        save();
+        isMotdEnabled = checkConfigValue("messages.motd.enabled", false)
+        motd = checkConfigValue(
+            "messages.motd.text",
+            listOf(
+                "",
+                " <#fcfcfc>Welcome, <#745c97>%player_name%</#745c97>!",
+                " <#c0c0c0>‣ <#fcfcfc>Your group: %luckperms_prefix%",
+                ""
+            )
+        )
+
+        save()
     }
-
 }

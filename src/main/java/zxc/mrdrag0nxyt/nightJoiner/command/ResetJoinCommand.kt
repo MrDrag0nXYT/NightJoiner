@@ -1,100 +1,73 @@
-package zxc.MrDrag0nXYT.nightJoiner.command;
+package zxc.mrdrag0nxyt.nightJoiner.command
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
-import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.config.Messages;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
+import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
+import org.bukkit.entity.Player
+import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
+import zxc.mrdrag0nxyt.nightJoiner.config.Config
+import zxc.mrdrag0nxyt.nightJoiner.config.Messages
+import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
+import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
+import java.sql.SQLException
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
-public class ResetJoinCommand implements CommandExecutor, TabCompleter {
-
-    private final NightJoiner plugin;
-    private Config config;
-    private Messages messages;
-    private DatabaseManager databaseManager;
-
-    public ResetJoinCommand(NightJoiner plugin, Config config, Messages messages, DatabaseManager databaseManager) {
-        this.plugin = plugin;
-        this.config = config;
-        this.messages = messages;
-        this.databaseManager = databaseManager;
-    }
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-
-        YamlConfiguration messagesConfig = this.messages.getConfig();
-
+class ResetJoinCommand(
+    private val plugin: NightJoiner,
+    private val config: Config,
+    private val messages: Messages,
+    private val databaseManager: DatabaseManager
+) :
+    CommandExecutor, TabCompleter {
+    override fun onCommand(commandSender: CommandSender, command: Command, s: String, strings: Array<String>): Boolean {
         if (!commandSender.hasPermission("nightjoiner.player.setjoin")) {
-            for (String string : messagesConfig.getStringList("global.no-permission")) {
-                commandSender.sendMessage(
-                        Utilities.setColor(string)
-                );
+            for (string in messages.globalNoPermission) {
+                commandSender.sendColoredMessage(string)
             }
-            return true;
+            return true
         }
 
-        if (commandSender instanceof Player) {
-            Player player = (Player) commandSender;
+        if (commandSender is Player) {
+            val player = commandSender
 
-            DatabaseWorker databaseWorker = databaseManager.getDatabaseWorker();
+            val databaseWorker = databaseManager.databaseWorker
 
-            try (Connection connection = databaseManager.getConnection()) {
+            try {
+                databaseManager.getConnection().use { connection ->
+                    val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
+                    if (!isBlocked) {
+                        databaseWorker.resetJoinMessage(connection, player.uniqueId, player.name)
 
-                boolean isBlocked = databaseWorker.getBlockStatus(connection, player.getName());
-
-                if (!isBlocked) {
-                    databaseWorker.resetJoinMessage(connection, player.getUniqueId(), player.getName());
-
-                    for (String string : messagesConfig.getStringList("resetjoin.success")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(string)
-                        );
-                    }
-
-                } else {
-                    for (String string : messagesConfig.getStringList("resetjoin.blocked")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(string)
-                        );
+                        for (string in messages.resetJoinSuccess) {
+                            commandSender.sendColoredMessage(string)
+                        }
+                    } else {
+                        for (string in messages.resetJoinBlocked) {
+                            commandSender.sendColoredMessage(string)
+                        }
                     }
                 }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                for (String string : messagesConfig.getStringList("global.database-error")) {
-                    commandSender.sendMessage(
-                            Utilities.setColor(string)
-                    );
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                for (string in messages.globalDatabaseError) {
+                    commandSender.sendColoredMessage(string)
                 }
             }
-
         } else {
-            for (String string : messagesConfig.getStringList("global.not-player")) {
-                commandSender.sendMessage(
-                        Utilities.setColor(string)
-                );
+            for (string in messages.globalNotPlayer) {
+                commandSender.sendColoredMessage(string)
             }
         }
 
-        return true;
+        return true
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return List.of();
+    override fun onTabComplete(
+        commandSender: CommandSender,
+        command: Command,
+        s: String,
+        strings: Array<String>
+    ): List<String>? {
+        return listOf()
     }
 }

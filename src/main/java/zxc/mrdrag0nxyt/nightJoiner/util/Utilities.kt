@@ -1,36 +1,44 @@
-package zxc.MrDrag0nXYT.nightJoiner.util;
+package zxc.mrdrag0nxyt.nightJoiner.util
 
-import me.clip.placeholderapi.PlaceholderAPI;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.entity.Player;
-import org.bukkit.metadata.MetadataValue;
+import me.clip.placeholderapi.PlaceholderAPI
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 
-public class Utilities {
-
-    public static final MiniMessage miniMessage = MiniMessage.miniMessage();
-
-    public static Component setColor(String from) {
-        return miniMessage.deserialize(from);
+object Utilities {
+    fun setColorWithPlaceholders(player: Player?, from: String): Component {
+        return MiniMessage.miniMessage().deserialize(
+            MiniMessage.miniMessage().serialize(
+                LegacyComponentSerializer.legacySection().deserialize(
+                    PlaceholderAPI.setPlaceholders(player, from).replace("&", "§")
+                )
+            )
+                .replace("\\<", "<")
+                .replace("\\>", ">")
+        )
     }
 
-    public static Component setColorWithPlaceholders(Player player, String from) {
-        return miniMessage.deserialize(
-                miniMessage.serialize(
-                                LegacyComponentSerializer.legacySection().deserialize(
-                                        PlaceholderAPI.setPlaceholders(player, from).replace("&", "§")
-                                )
-                        )
-                        .replace("\\<", "<")
-                        .replace("\\>", ">")
-        );
-    }
-
-    public static boolean isVanished(Player player) {
-        for (MetadataValue metadataValue : player.getMetadata("vanished")) {
-            if (metadataValue.asBoolean()) return true;
+    fun isVanished(player: Player): Boolean {
+        for (metadataValue in player.getMetadata("vanished")) {
+            if (metadataValue.asBoolean()) return true
         }
-        return false;
+        return false
     }
+}
+
+fun CommandSender.sendColoredMessage(text: String) {
+    sendMessage(MiniMessage.miniMessage().deserialize(text))
+}
+
+fun CommandSender.sendColoredMessageWithPlaceholders(text: String, placeholders: Map<String, String>) {
+    var result = text
+    placeholders.entries.forEach { (key, value) ->
+        result = result.replace("%$key%", value)
+    }
+
+    sendMessage(
+        MiniMessage.miniMessage().deserialize(result)
+    )
 }

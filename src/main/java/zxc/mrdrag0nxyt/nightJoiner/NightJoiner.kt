@@ -1,85 +1,84 @@
-package zxc.MrDrag0nXYT.nightJoiner;
+package zxc.mrdrag0nxyt.nightJoiner
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.plugin.java.JavaPlugin;
-import zxc.MrDrag0nXYT.nightJoiner.command.*;
-import zxc.MrDrag0nXYT.nightJoiner.listener.PlayerJoinQuitListener;
-import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.config.Messages;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
-import zxc.MrDrag0nXYT.nightJoiner.util.metrics.BStatsMetrics;
+import org.bstats.bukkit.Metrics
+import org.bukkit.Bukkit
+import org.bukkit.plugin.java.JavaPlugin
+import zxc.mrdrag0nxyt.nightJoiner.command.*
+import zxc.mrdrag0nxyt.nightJoiner.config.Config
+import zxc.mrdrag0nxyt.nightJoiner.config.Messages
+import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
+import zxc.mrdrag0nxyt.nightJoiner.listener.PlayerJoinQuitListener
+import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
+import java.sql.SQLException
 
-import java.sql.Connection;
-import java.sql.SQLException;
+class NightJoiner : JavaPlugin() {
+    private var config = Config(this)
+    private var messages = Messages(this)
 
-public final class NightJoiner extends JavaPlugin {
+    private var databaseManager: DatabaseManager = DatabaseManager(this, config.databaseType, config.databaseConfig)
 
-    private Config config;
-    private Messages messages;
-
-    private DatabaseManager databaseManager;
-
-    @Override
-    public void onEnable() {
+    override fun onEnable() {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
-            getLogger().severe("PlaceholderAPI not found!");
-            Bukkit.getPluginManager().disablePlugin(this);
+            logger.severe("PlaceholderAPI not found!")
+            Bukkit.getPluginManager().disablePlugin(this)
         }
 
-        config = new Config(this);
-        messages = new Messages(this);
+        val databaseWorker = databaseManager.databaseWorker
 
-        databaseManager = new DatabaseManager(this, config);
-        DatabaseWorker databaseWorker = databaseManager.getDatabaseWorker();
-
-        try (Connection connection = databaseManager.getConnection()) {
-            databaseWorker.initTable(connection);
-        } catch (SQLException e) {
-            getLogger().severe(e.getMessage());
+        try {
+            databaseManager.getConnection().use { connection ->
+                databaseWorker?.initTable(connection!!)
+            }
+        } catch (e: SQLException) {
+            logger.severe(e.message)
         }
 
-        if (config.getConfig().getBoolean("enable-metrics")) {
-            BStatsMetrics metrics = new BStatsMetrics(this, 23311);
-        }
+        if (config.metricsEnabled) Metrics(this, 23311)
 
-        getCommand("nightjoiner").setExecutor(new MainCommand(this, config, messages, databaseManager));
-        getCommand("setjoin").setExecutor(new SetJoinCommand(this, config, messages, databaseManager));
-        getCommand("setquit").setExecutor(new SetQuitCommand(this, config, messages, databaseManager));
-        getCommand("resetjoin").setExecutor(new ResetJoinCommand(this, config, messages, databaseManager));
-        getCommand("resetquit").setExecutor(new ResetQuitCommand(this, config, messages, databaseManager));
+        getCommand("nightjoiner")?.setExecutor(MainCommand(this, config, messages, databaseManager))
+        getCommand("setjoin")?.setExecutor(SetJoinCommand(this, config, messages, databaseManager))
+        getCommand("setquit")?.setExecutor(SetQuitCommand(this, config, messages, databaseManager))
+        getCommand("resetjoin")?.setExecutor(
+            ResetJoinCommand(
+                this, config, messages,
+                databaseManager
+            )
+        )
+        getCommand("resetquit")?.setExecutor(ResetQuitCommand(this, config, messages, databaseManager))
 
-        getServer().getPluginManager().registerEvents(new PlayerJoinQuitListener(this, config, databaseManager), this);
+        server.pluginManager.registerEvents(
+            PlayerJoinQuitListener(
+                this,
+                config, databaseManager
+            ), this
+        )
 
-        sendTitle(true);
+        sendTitle(true)
     }
 
-    @Override
-    public void onDisable() {
-        databaseManager.closeConnection();
-        sendTitle(false);
+    override fun onDisable() {
+        databaseManager.closeConnection()
+        sendTitle(false)
     }
 
-    public void reload() {
-        config.reload();
-        messages.reload();
-        databaseManager.updateConnection(config.getConfig());
+    fun reload() {
+        config.reload()
+        messages.reload()
+        databaseManager.updateConnection(config.databaseType, config.databaseConfig)
     }
 
-    private void sendTitle(boolean isEnable) {
-        String isEnableMessage = isEnable ? "<#ace1af>Plugin successfully loaded!" : "<#d45079>Plugin successfully unloaded!";
+    private fun sendTitle(isEnable: Boolean) {
+        val isEnableMessage =
+            if (isEnable) "<#ace1af>Plugin successfully loaded!" else "<#d45079>Plugin successfully unloaded!"
 
         // Здесь можно было бы сделать через getLogger().info(), но у меня setColor возвращает Component. Зато MiniMessage)))
+        val sender = Bukkit.getConsoleSender()
 
-        ConsoleCommandSender sender = Bukkit.getConsoleSender();
-
-        sender.sendMessage(Utilities.setColor(" "));
-        sender.sendMessage(Utilities.setColor(" <#a880ff>█▄░█ █ █▀▀ █░█ ▀█▀ ░░█ █▀█ █ █▄░█ █▀▀ █▀█</#a880ff>    <#696969>|</#696969>    <#fcfcfc>Version: <#a880ff>" + this.getDescription().getVersion() + "</#a880ff>"));
-        sender.sendMessage(Utilities.setColor(" <#a880ff>█░▀█ █ █▄█ █▀█ ░█░ █▄█ █▄█ █ █░▀█ ██▄ █▀▄</#a880ff>    <#696969>|</#696969>    <#fcfcfc>Author: <#a880ff>MrDrag0nXYT (https://drakoshaslv.ru)</#a880ff>"));
-        sender.sendMessage(Utilities.setColor(" "));
-        sender.sendMessage(Utilities.setColor(" " + isEnableMessage));
-        sender.sendMessage(Utilities.setColor(" "));
+        sender.sendColoredMessage(" ")
+        sender.sendColoredMessage(" <#a880ff>█▄░█ █ █▀▀ █░█ ▀█▀ ░░█ █▀█ █ █▄░█ █▀▀ █▀█</#a880ff>    <#696969>|</#696969>    <#fcfcfc>Version: <#a880ff>${description.version}</#a880ff>")
+        sender.sendColoredMessage(" <#a880ff>█░▀█ █ █▄█ █▀█ ░█░ █▄█ █▄█ █ █░▀█ ██▄ █▀▄</#a880ff>    <#696969>|</#696969>    <#fcfcfc>Author: <#a880ff>MrDrag0nXYT ( https://drakoshaslv.ru )</#a880ff>")
+        sender.sendColoredMessage(" ")
+        sender.sendColoredMessage(" $isEnableMessage")
+        sender.sendColoredMessage(" ")
     }
 }

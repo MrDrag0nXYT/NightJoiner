@@ -1,22 +1,33 @@
-package zxc.MrDrag0nXYT.nightJoiner.database.entity;
+package zxc.mrdrag0nxyt.nightJoiner.database.entity
 
-import java.util.UUID;
+import java.util.*
 
-public record UserRecord(long id, String username, UUID uuid, String join_message, String quit_message, int is_blocked) {
+class UserRecord(
+    id: Long,
+    username: String?,
+    uuid: UUID,
+    join_message: String?,
+    quit_message: String?,
+    is_blocked: Int
+) {
+    constructor(username: String?, uuid: UUID) : this(-1, username, uuid, null, null, 0)
 
-    public UserRecord(String username, UUID uuid) {
-        this(-1, username, uuid, null, null, 0);
+    val id: Long
+    val username: String?
+    val uuid: UUID
+    val join_message: String?
+    val quit_message: String?
+    val is_blocked: Int
+
+    init {
+        var is_blocked = is_blocked
+        if (is_blocked != 1) is_blocked = 0
+
+        this.id = id
+        this.username = username
+        this.uuid = uuid
+        this.join_message = join_message
+        this.quit_message = quit_message
+        this.is_blocked = is_blocked
     }
-
-    public UserRecord(long id, String username, UUID uuid, String join_message, String quit_message, int is_blocked) {
-        if (is_blocked != 1) is_blocked = 0;
-
-        this.id = id;
-        this.username = username;
-        this.uuid = uuid;
-        this.join_message = join_message;
-        this.quit_message = quit_message;
-        this.is_blocked = is_blocked;
-    }
-
 }

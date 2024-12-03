@@ -1,126 +1,93 @@
-package zxc.MrDrag0nXYT.nightJoiner.command;
+package zxc.mrdrag0nxyt.nightJoiner.command
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import zxc.MrDrag0nXYT.nightJoiner.NightJoiner;
-import zxc.MrDrag0nXYT.nightJoiner.util.Utilities;
-import zxc.MrDrag0nXYT.nightJoiner.config.Config;
-import zxc.MrDrag0nXYT.nightJoiner.config.Messages;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseManager;
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
+import org.bukkit.command.Command
+import org.bukkit.command.CommandExecutor
+import org.bukkit.command.CommandSender
+import org.bukkit.command.TabCompleter
+import org.bukkit.entity.Player
+import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
+import zxc.mrdrag0nxyt.nightJoiner.config.Config
+import zxc.mrdrag0nxyt.nightJoiner.config.Messages
+import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
+import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
+import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessageWithPlaceholders
+import java.sql.SQLException
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
-
-public class SetQuitCommand implements CommandExecutor, TabCompleter {
-
-    private final NightJoiner plugin;
-    private Config config;
-    private Messages messages;
-    private DatabaseManager databaseManager;
-
-    public SetQuitCommand(NightJoiner plugin, Config config, Messages messages, DatabaseManager databaseManager) {
-        this.plugin = plugin;
-        this.config = config;
-        this.messages = messages;
-        this.databaseManager = databaseManager;
-    }
-
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-
-        YamlConfiguration messagesConfig = this.messages.getConfig();
-
+class SetQuitCommand(
+    private val plugin: NightJoiner,
+    private val config: Config,
+    private val messages: Messages,
+    private val databaseManager: DatabaseManager
+) :
+    CommandExecutor, TabCompleter {
+    override fun onCommand(commandSender: CommandSender, command: Command, s: String, strings: Array<String>): Boolean {
         if (!commandSender.hasPermission("nightjoiner.player.setquit")) {
-            for (String string : messagesConfig.getStringList("global.no-permission")) {
-                commandSender.sendMessage(
-                        Utilities.setColor(string)
-                );
+            for (string in messages.globalNoPermission) {
+                commandSender.sendColoredMessage(string)
             }
-            return true;
+            return true
         }
 
-        if (strings.length == 0) {
-            for (String string : messagesConfig.getStringList("setquit.usage")) {
-                commandSender.sendMessage(
-                        Utilities.setColor(string)
-                );
+        if (strings.isEmpty()) {
+            for (string in messages.setQuitUsage) {
+                commandSender.sendColoredMessage(string)
             }
-            return true;
+            return true
         }
 
-        if (commandSender instanceof Player) {
-            Player player = (Player) commandSender;
+        if (commandSender is Player) {
+            val player = commandSender
 
-            DatabaseWorker databaseWorker = databaseManager.getDatabaseWorker();
+            val databaseWorker = databaseManager.databaseWorker
 
-            String message = String.join(" ", strings);
+            val message = java.lang.String.join(" ", *strings)
             if (message.isEmpty()) {
-                for (String string : messagesConfig.getStringList("setjoin.usage")) {
-                    commandSender.sendMessage(
-                            Utilities.setColor(string)
-                    );
+                for (string in messages.setQuitUsage) {
+                    commandSender.sendColoredMessage(string)
                 }
             }
 
-            try (Connection connection = databaseManager.getConnection()) {
-
-                boolean isBlocked = databaseWorker.getBlockStatus(connection, player.getName());
-
-                if (!isBlocked) {
-                    databaseWorker.setQuitMessage(
+            try {
+                databaseManager.getConnection().use { connection ->
+                    val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
+                    if (!isBlocked) {
+                        databaseWorker.setQuitMessage(
                             connection,
-                            player.getUniqueId(),
-                            player.getName(),
+                            player.uniqueId,
+                            player.name,
                             message
-                    );
+                        )
 
-                    for (String string : messagesConfig.getStringList("setquit.success")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(
-                                        string
-                                                .replace("%message%", message)
-                                )
-                        );
-                    }
-
-                } else {
-                    for (String string : messagesConfig.getStringList("setquit.blocked")) {
-                        commandSender.sendMessage(
-                                Utilities.setColor(string)
-                        );
+                        for (string in messages.setQuitSuccess) {
+                            commandSender.sendColoredMessageWithPlaceholders(string, mapOf("message" to message))
+                        }
+                    } else {
+                        for (string in messages.setQuitBlocked) {
+                            commandSender.sendColoredMessage(string)
+                        }
                     }
                 }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                for (String string : messagesConfig.getStringList("global.database-error")) {
-                    commandSender.sendMessage(
-                            Utilities.setColor(string)
-                    );
+            } catch (e: SQLException) {
+                e.printStackTrace()
+                for (string in messages.globalDatabaseError) {
+                    commandSender.sendColoredMessage(string)
                 }
             }
-
         } else {
-            for (String string : messagesConfig.getStringList("global.not-player")) {
-                commandSender.sendMessage(
-                        Utilities.setColor(string)
-                );
+            for (string in messages.globalNotPlayer) {
+                commandSender.sendColoredMessage(string)
             }
         }
 
-        return true;
+        return true
     }
 
-    @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-        return List.of();
+    override fun onTabComplete(
+        commandSender: CommandSender,
+        command: Command,
+        s: String,
+        strings: Array<String>
+    ): List<String>? {
+        return listOf()
     }
 }

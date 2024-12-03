@@ -1,20 +1,16 @@
-package zxc.MrDrag0nXYT.nightJoiner.database.impl;
+package zxc.mrdrag0nxyt.nightJoiner.database.impl
 
-import zxc.MrDrag0nXYT.nightJoiner.database.DatabaseWorker;
-import zxc.MrDrag0nXYT.nightJoiner.database.entity.UserRecord;
-import zxc.MrDrag0nXYT.nightJoiner.util.exception.UserRecordNotFound;
+import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseWorker
+import zxc.mrdrag0nxyt.nightJoiner.database.entity.UserRecord
+import zxc.mrdrag0nxyt.nightJoiner.util.exception.UserRecordNotFound
+import java.sql.Connection
+import java.sql.SQLException
+import java.util.*
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.UUID;
-
-public class SQLiteDatabaseWorker implements DatabaseWorker {
-
-    @Override
-    public void initTable(Connection connection) throws SQLException {
-        String sql = """
+class SQLiteDatabaseWorker : DatabaseWorker {
+    @Throws(SQLException::class)
+    override fun initTable(connection: Connection) {
+        val sql: String = """
                 CREATE TABLE IF NOT EXISTS 'messages' (
                     'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                     'username' TEXT NOT NULL UNIQUE,
@@ -23,176 +19,189 @@ public class SQLiteDatabaseWorker implements DatabaseWorker {
                     'quit_message' TEXT DEFAULT NULL,
                     'is_blocked' INTEGER DEFAULT 0  CHECK("is_blocked" >= 0 AND "is_blocked" <= 1)
                 );
-                """;
+                
+                """.trimIndent()
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.executeUpdate();
+        connection.prepareStatement(sql).use {
+            it.executeUpdate()
+        }
     }
 
 
+    @Throws(SQLException::class)
+    override fun addUserRecord(connection: Connection, userRecord: UserRecord) {
+        val sql = "INSERT INTO messages (username, uuid) VALUES (?, ?)"
 
-    @Override
-    public void addUserRecord(Connection connection, UserRecord userRecord) throws SQLException {
-        String sql = "INSERT INTO messages (username, uuid) VALUES (?, ?)";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, userRecord.username());
-        preparedStatement.setString(2, userRecord.uuid().toString());
-        preparedStatement.executeUpdate();
+        connection.prepareStatement(sql).use {
+            it.setString(1, userRecord.username)
+            it.setString(2, userRecord.uuid.toString())
+            it.executeUpdate()
+        }
     }
 
-    @Override
-    public UserRecord getUser(Connection connection, UUID uuid, String username) throws SQLException, UserRecordNotFound {
-        String sql = "SELECT * FROM messages WHERE uuid = ? OR username = ?";
+    @Throws(SQLException::class, UserRecordNotFound::class)
+    override fun getUser(connection: Connection, uuid: UUID, username: String?): UserRecord {
+        val sql = "SELECT * FROM messages WHERE uuid = ? OR username = ?"
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, uuid.toString());
-        preparedStatement.setString(2, username);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        connection.prepareStatement(sql).use {
+            it.setString(1, uuid.toString())
+            it.setString(2, username)
+            val resultSet = it.executeQuery()
 
-        if (resultSet.next()) {
-            return new UserRecord(
+            if (resultSet.next()) {
+                return UserRecord(
                     resultSet.getLong("id"),
                     resultSet.getString("username"),
                     UUID.fromString(resultSet.getString("uuid")),
                     resultSet.getString("join_message"),
                     resultSet.getString("quit_message"),
                     resultSet.getInt("is_blocked")
-                    );
-
-        } else {
-            throw new UserRecordNotFound();
+                )
+            } else {
+                throw UserRecordNotFound()
+            }
         }
     }
 
 
+    @Throws(SQLException::class)
+    override fun getJoinMessage(connection: Connection, uuid: UUID, username: String?): String? {
+        val sql = "SELECT * FROM messages WHERE uuid = ? OR username = ?"
 
-    @Override
-    public String getJoinMessage(Connection connection, UUID uuid, String username) throws SQLException {
-        String sql = "SELECT * FROM messages WHERE uuid = ? OR username = ?";
+        connection.prepareStatement(sql).use {
+            it.setString(1, uuid.toString())
+            it.setString(2, username)
+            val resultSet = it.executeQuery()
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, uuid.toString());
-        preparedStatement.setString(2, username);
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        if (resultSet.next()) {
-            return resultSet.getString("join_message");
-        } else {
-            return null;
+            return if (resultSet.next()) {
+                resultSet.getString("join_message")
+            } else {
+                null
+            }
         }
     }
 
-    @Override
-    public String getQuitMessage(Connection connection, UUID uuid, String username) throws SQLException {
-        String sql = "SELECT * FROM messages WHERE uuid = ? OR username = ?";
+    @Throws(SQLException::class)
+    override fun getQuitMessage(connection: Connection, uuid: UUID, username: String?): String? {
+        val sql = "SELECT * FROM messages WHERE uuid = ? OR username = ?"
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, uuid.toString());
-        preparedStatement.setString(2, username);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        connection.prepareStatement(sql).use {
+            it.setString(1, uuid.toString())
+            it.setString(2, username)
+            val resultSet = it.executeQuery()
 
-        if (resultSet.next()) {
-            return resultSet.getString("quit_message");
-        } else {
-            return null;
+            return if (resultSet.next()) {
+                resultSet.getString("quit_message")
+            } else {
+                null
+            }
         }
     }
 
 
-
-    @Override
-    public void setJoinMessage(Connection connection, UUID uuid, String username, String newMessage) throws SQLException {
-        addMessageForUser(connection, uuid, username, newMessage, "join_message");
+    @Throws(SQLException::class)
+    override fun setJoinMessage(connection: Connection, uuid: UUID, username: String, newMessage: String) {
+        addMessageForUser(connection, uuid, username, newMessage, "join_message")
     }
 
-    @Override
-    public void setQuitMessage(Connection connection, UUID uuid, String username, String newMessage) throws SQLException {
-        addMessageForUser(connection, uuid, username, newMessage, "quit_message");
+    @Throws(SQLException::class)
+    override fun setQuitMessage(connection: Connection, uuid: UUID, username: String, newMessage: String) {
+        addMessageForUser(connection, uuid, username, newMessage, "quit_message")
     }
 
-    @Override
-    public void resetJoinMessage(Connection connection, UUID uuid, String username) throws SQLException {
-        resetMessageForUser(connection, uuid, username, "join_message");
+    @Throws(SQLException::class)
+    override fun resetJoinMessage(connection: Connection, uuid: UUID, username: String) {
+        resetMessageForUser(connection, uuid, username, "join_message")
     }
 
-    @Override
-    public void resetQuitMessage(Connection connection, UUID uuid, String username) throws SQLException {
-        resetMessageForUser(connection, uuid, username, "quit_message");
+    @Throws(SQLException::class)
+    override fun resetQuitMessage(connection: Connection, uuid: UUID, username: String) {
+        resetMessageForUser(connection, uuid, username, "quit_message")
     }
 
-    @Override
-    public void resetMessages(Connection connection, UUID uuid, String username) throws SQLException {
-        resetMessageForUser(connection, uuid, username, "join_message");
-        resetMessageForUser(connection, uuid, username, "quit_message");
+    @Throws(SQLException::class)
+    override fun resetMessages(connection: Connection, uuid: UUID, username: String) {
+        resetMessageForUser(connection, uuid, username, "join_message")
+        resetMessageForUser(connection, uuid, username, "quit_message")
     }
 
-    private void addMessageForUser(Connection connection, UUID uuid, String username, String newMessage, String messageType) throws SQLException {
-        String sql = "INSERT OR REPLACE INTO messages (uuid, username, " + messageType + ") VALUES (?, ?, ?)";
+    @Throws(SQLException::class)
+    private fun addMessageForUser(
+        connection: Connection,
+        uuid: UUID,
+        username: String,
+        newMessage: String,
+        messageType: String
+    ) {
+        val sql = "INSERT OR REPLACE INTO messages (uuid, username, $messageType) VALUES (?, ?, ?)"
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, uuid.toString());
-        preparedStatement.setString(2, username);
-        preparedStatement.setString(3, newMessage);
+        connection.prepareStatement(sql).use {
+            it.setString(1, uuid.toString())
+            it.setString(2, username)
+            it.setString(3, newMessage)
 
-        preparedStatement.executeUpdate();
-    }
-
-    private void resetMessageForUser(Connection connection, UUID uuid, String username, String messageType) throws SQLException {
-        String sql = "INSERT OR REPLACE INTO messages (uuid, username, " + messageType + ") VALUES (?, ?, NULL)";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, uuid.toString());
-        preparedStatement.setString(2, username);
-
-        preparedStatement.executeUpdate();
-    }
-
-
-
-    @Override
-    public boolean getBlockStatus(Connection connection, String username) throws SQLException {
-        String sql = "SELECT is_blocked FROM messages WHERE username = ?";
-
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, username);
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        if (resultSet.next()) {
-            return resultSet.getInt("is_blocked") == 1;
-        } else {
-            return false;
+            it.executeUpdate()
         }
     }
 
-    @Override
-    public boolean getBlockStatus(Connection connection, UUID uuid) throws SQLException {
-        String sql = "SELECT is_blocked FROM messages WHERE uuid = ?";
+    @Throws(SQLException::class)
+    private fun resetMessageForUser(connection: Connection, uuid: UUID, username: String, messageType: String) {
+        val sql = "INSERT OR REPLACE INTO messages (uuid, username, $messageType) VALUES (?, ?, NULL)"
 
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        preparedStatement.setString(1, uuid.toString());
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        if (resultSet.next()) {
-            return resultSet.getInt("is_blocked") == 1;
-        } else {
-            return false;
+        connection.prepareStatement(sql).use {
+            it.setString(1, uuid.toString())
+            it.setString(2, username)
+            it.executeUpdate()
         }
     }
 
-    @Override
-    public void setBlockStatus(Connection connection, String target, int isBlocked) throws SQLException, UserRecordNotFound {
-        String Sql = "UPDATE messages SET is_blocked = ? WHERE username = ?";
 
-        PreparedStatement preparedStatement = connection.prepareStatement(Sql);
-        preparedStatement.setInt(1, isBlocked);
-        preparedStatement.setString(2, target);
+    @Throws(SQLException::class)
+    override fun getBlockStatus(connection: Connection, username: String?): Boolean {
+        val sql = "SELECT is_blocked FROM messages WHERE username = ?"
 
-        int changed = preparedStatement.executeUpdate();
+        connection.prepareStatement(sql).use {
+            it.setString(1, username)
+            val resultSet = it.executeQuery()
 
-        if (changed == 0) {
-            throw new UserRecordNotFound();
+            return if (resultSet.next()) {
+                resultSet.getInt("is_blocked") == 1
+            } else {
+                false
+            }
         }
     }
 
+    @Throws(SQLException::class)
+    override fun getBlockStatus(connection: Connection, uuid: UUID): Boolean {
+        val sql = "SELECT is_blocked FROM messages WHERE uuid = ?"
+
+        connection.prepareStatement(sql).use {
+            it.setString(1, uuid.toString())
+
+            val resultSet = it.executeQuery()
+
+            return if (resultSet.next()) {
+                resultSet.getInt("is_blocked") == 1
+            } else {
+                false
+            }
+        }
+    }
+
+    @Throws(SQLException::class, UserRecordNotFound::class)
+    override fun setBlockStatus(connection: Connection, target: String?, isBlocked: Int) {
+        val sql = "UPDATE messages SET is_blocked = ? WHERE username = ?"
+
+        connection.prepareStatement(sql).use {
+            it.setInt(1, isBlocked)
+            it.setString(2, target)
+
+            val changed = it.executeUpdate()
+
+            if (changed == 0) {
+                throw UserRecordNotFound()
+            }
+        }
+    }
 }

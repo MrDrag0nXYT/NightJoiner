@@ -1,31 +1,48 @@
-package zxc.MrDrag0nXYT.nightJoiner.database;
+package zxc.mrdrag0nxyt.nightJoiner.database
 
-import zxc.MrDrag0nXYT.nightJoiner.database.entity.UserRecord;
-import zxc.MrDrag0nXYT.nightJoiner.util.exception.UserRecordNotFound;
+import zxc.mrdrag0nxyt.nightJoiner.database.entity.UserRecord
+import zxc.mrdrag0nxyt.nightJoiner.util.exception.UserRecordNotFound
+import java.sql.Connection
+import java.sql.SQLException
+import java.util.*
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.UUID;
+interface DatabaseWorker {
+    @Throws(SQLException::class)
+    fun initTable(connection: Connection)
 
-public interface DatabaseWorker {
-    void initTable(Connection connection) throws SQLException;
+    @Throws(SQLException::class)
+    fun addUserRecord(connection: Connection, userRecord: UserRecord)
 
-    void addUserRecord(Connection connection, UserRecord userRecord) throws SQLException;
+    @Throws(SQLException::class, UserRecordNotFound::class)
+    fun getUser(connection: Connection, uuid: UUID, username: String?): UserRecord
 
-    UserRecord getUser(Connection connection, UUID uuid, String username) throws SQLException, UserRecordNotFound;
+    @Throws(SQLException::class)
+    fun getJoinMessage(connection: Connection, uuid: UUID, username: String?): String?
 
-    String getJoinMessage(Connection connection, UUID uuid, String username) throws SQLException;
-    String getQuitMessage(Connection connection, UUID uuid, String username) throws SQLException;
+    @Throws(SQLException::class)
+    fun getQuitMessage(connection: Connection, uuid: UUID, username: String?): String?
 
-    void setJoinMessage(Connection connection, UUID uuid, String username, String newMessage) throws SQLException;
-    void setQuitMessage(Connection connection, UUID uuid, String username, String newMessage) throws SQLException;
+    @Throws(SQLException::class)
+    fun setJoinMessage(connection: Connection, uuid: UUID, username: String, newMessage: String)
 
-    void resetJoinMessage(Connection connection, UUID uuid, String username) throws SQLException;
-    void resetQuitMessage(Connection connection, UUID uuid, String username) throws SQLException;
-    void resetMessages(Connection connection, UUID uuid, String username) throws SQLException;
+    @Throws(SQLException::class)
+    fun setQuitMessage(connection: Connection, uuid: UUID, username: String, newMessage: String)
 
-    boolean getBlockStatus(Connection connection, String username) throws SQLException;
-    boolean getBlockStatus(Connection connection, UUID uuid) throws SQLException;
+    @Throws(SQLException::class)
+    fun resetJoinMessage(connection: Connection, uuid: UUID, username: String)
 
-    void setBlockStatus(Connection connection, String target, int isBlock) throws SQLException, UserRecordNotFound;
+    @Throws(SQLException::class)
+    fun resetQuitMessage(connection: Connection, uuid: UUID, username: String)
+
+    @Throws(SQLException::class)
+    fun resetMessages(connection: Connection, uuid: UUID, username: String)
+
+    @Throws(SQLException::class)
+    fun getBlockStatus(connection: Connection, username: String?): Boolean
+
+    @Throws(SQLException::class)
+    fun getBlockStatus(connection: Connection, uuid: UUID): Boolean
+
+    @Throws(SQLException::class, UserRecordNotFound::class)
+    fun setBlockStatus(connection: Connection, target: String?, isBlock: Int)
 }
