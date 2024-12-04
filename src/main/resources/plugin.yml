@@ -1,5 +1,5 @@
 name: NightJoiner
-version: '1.0.2'
+version: $version
 main: zxc.mrdrag0nxyt.nightJoiner.NightJoiner
 api-version: '1.18'
 authors: [ mrdrag0nxyt (drakoshaslv) ]
