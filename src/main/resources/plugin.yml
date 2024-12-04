@@ -12,6 +12,7 @@ libraries:
   - "org.xerial:sqlite-jdbc:3.47.0.0"
   - "net.kyori:adventure-api:4.17.0"
   - "net.kyori:adventure-text-serializer-legacy:4.17.0"
+  - "com.google.code.gson:gson:2.11.0"
 
 commands:
   nightjoiner:
@@ -46,6 +47,9 @@ permissions:
   nightjoiner.admin.unban:
     default: op
 
+  nightjoiner.admin.checkupdates:
+    default: op
+
   nightjoiner.*:
     default: op
     children:
@@ -58,6 +62,7 @@ permissions:
       nightjoiner.admin.reload: true
       nightjoiner.admin.ban: true
       nightjoiner.admin.unban: true
+      nightjoiner.admin.checkupdates: true
       nightjoiner.player.*: true
 
   nightjoiner.player.*:

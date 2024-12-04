@@ -88,15 +88,8 @@ class Messages(private val plugin: NightJoiner) {
     * Checking config values
     */
 
-    private fun <T> checkConfigValue(key: String, value: T): T {
-        if (!config.contains(key)) {
-            config.set(key, value)
-        }
-        return value
-    }
-
     private fun updateConfig() {
-        globalNoPermission = checkConfigValue(
+        globalNoPermission = checkValue(
             "global.no-permission",
             listOf(
                 "",
@@ -104,7 +97,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        globalNotPlayer = checkConfigValue(
+        globalNotPlayer = checkValue(
             "global.not-player",
             listOf(
                 "",
@@ -112,7 +105,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        globalDatabaseError = checkConfigValue(
+        globalDatabaseError = checkValue(
             "global.database-error",
             listOf(
                 "",
@@ -121,7 +114,7 @@ class Messages(private val plugin: NightJoiner) {
             )
         )
 
-        mainUsage = checkConfigValue(
+        mainUsage = checkValue(
             "nightjoiner.usage", listOf(
                 "",
                 " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Информация",
@@ -131,7 +124,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        mainReloaded = checkConfigValue(
+        mainReloaded = checkValue(
             "nightjoiner.reloaded",
             listOf(
                 "",
@@ -139,7 +132,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        mainTargetNotFound = checkConfigValue(
+        mainTargetNotFound = checkValue(
             "nightjoiner.player-not-found",
             listOf(
                 "",
@@ -147,7 +140,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        mainTargetBanned = checkConfigValue(
+        mainTargetBanned = checkValue(
             "nightjoiner.banned",
             listOf(
                 "",
@@ -155,7 +148,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        mainTargetUnbanned = checkConfigValue(
+        mainTargetUnbanned = checkValue(
             "nightjoiner.unbanned",
             listOf(
                 "",
@@ -164,7 +157,7 @@ class Messages(private val plugin: NightJoiner) {
             )
         )
 
-        setJoinUsage = checkConfigValue(
+        setJoinUsage = checkValue(
             "setjoin.usage", listOf(
                 "",
                 " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Использование <#745c97>/setjoin</#745c97>:",
@@ -172,7 +165,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        setJoinSuccess = checkConfigValue(
+        setJoinSuccess = checkValue(
             "setjoin.success",
             listOf(
                 "",
@@ -180,7 +173,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        setJoinBlocked = checkConfigValue(
+        setJoinBlocked = checkValue(
             "setjoin.blocked",
             listOf(
                 "",
@@ -189,7 +182,7 @@ class Messages(private val plugin: NightJoiner) {
             )
         )
 
-        setQuitUsage = checkConfigValue(
+        setQuitUsage = checkValue(
             "setquit.usage", listOf(
                 "",
                 " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Использование <#745c97>/setjoin</#745c97>:",
@@ -197,7 +190,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        setQuitSuccess = checkConfigValue(
+        setQuitSuccess = checkValue(
             "setquit.success",
             listOf(
                 "",
@@ -205,7 +198,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        setQuitBlocked = checkConfigValue(
+        setQuitBlocked = checkValue(
             "setquit.blocked",
             listOf(
                 "",
@@ -214,7 +207,7 @@ class Messages(private val plugin: NightJoiner) {
             )
         )
 
-        resetJoinSuccess = checkConfigValue(
+        resetJoinSuccess = checkValue(
             "resetjoin.success",
             listOf(
                 "",
@@ -222,7 +215,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        resetJoinBlocked = checkConfigValue(
+        resetJoinBlocked = checkValue(
             "resetjoin.blocked",
             listOf(
                 "",
@@ -231,7 +224,7 @@ class Messages(private val plugin: NightJoiner) {
             )
         )
 
-        resetQuitSuccess = checkConfigValue(
+        resetQuitSuccess = checkValue(
             "resetquit.success",
             listOf(
                 "",
@@ -239,7 +232,7 @@ class Messages(private val plugin: NightJoiner) {
                 ""
             )
         )
-        resetQuitBlocked = checkConfigValue(
+        resetQuitBlocked = checkValue(
             "resetquit.blocked",
             listOf(
                 "",
@@ -249,5 +242,14 @@ class Messages(private val plugin: NightJoiner) {
         )
 
         save()
+    }
+
+    private fun <T> checkValue(key: String, value: T): T {
+        return if (!config.contains(key)) {
+            config.set(key, value)
+            value
+        } else {
+            config.get(key) as T
+        }
     }
 }

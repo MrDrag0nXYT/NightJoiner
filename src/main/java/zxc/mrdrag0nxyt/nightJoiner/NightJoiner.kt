@@ -8,6 +8,7 @@ import zxc.mrdrag0nxyt.nightJoiner.config.Config
 import zxc.mrdrag0nxyt.nightJoiner.config.Messages
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
 import zxc.mrdrag0nxyt.nightJoiner.listener.PlayerJoinQuitListener
+import zxc.mrdrag0nxyt.nightJoiner.util.UpdateChecker
 import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
 import java.sql.SQLException
 
@@ -33,6 +34,7 @@ class NightJoiner : JavaPlugin() {
             logger.severe(e.message)
         }
 
+        if (config.isUpdateCheckEnabled) server.pluginManager.registerEvents(UpdateChecker(this, config), this)
         if (config.metricsEnabled) Metrics(this, 23311)
 
         getCommand("nightjoiner")?.setExecutor(MainCommand(this, config, messages, databaseManager))

@@ -13,6 +13,12 @@
 # Enable BStats metrics? You can see it here: https://bstats.org/plugin/bukkit/NightJoiner/23311
 enable-metrics: true
 
+# Enable updates check
+update-check:
+  enabled: true
+  # If player has permission nightjoiner.admin.checkupdates, he will receive message on join
+  announce-on-join: true
+
 #
 # Database for storing custom join messages
 # Supports SQLITE; todo: other DBs

@@ -16,6 +16,11 @@ class Config(private val plugin: NightJoiner) {
     var showInConsole = true
         private set
 
+    var isUpdateCheckEnabled = true
+        private set
+    var announceUpdateMessages = true
+        private set
+
     var databaseType = DatabaseType.SQLITE
         private set
     var databaseConfig: DatabaseConfigEntity? = null
@@ -73,48 +78,44 @@ class Config(private val plugin: NightJoiner) {
     * Checking config values
     */
 
-    private fun <T> checkConfigValue(key: String, value: T): T {
-        if (!config.contains(key)) {
-            config.set(key, value)
-        }
-        return value
-    }
-
     private fun updateConfig() {
-        metricsEnabled = checkConfigValue("enable-metrics", true)
+        metricsEnabled = checkValue("enable-metrics", true)
 
         databaseType = DatabaseType.fromStringType(
-            checkConfigValue("database.type", config.getString("database.type", "SQLITE")!!)
+            checkValue("database.type", config.getString("database.type", "SQLITE")!!)
         )
         if (databaseType != DatabaseType.SQLITE) {
             databaseConfig = DatabaseConfigEntity(
-                host = checkConfigValue(
+                host = checkValue(
                     "database.host",
                     config.getString("database.host", "localhost")!!
                 ),
-                port = checkConfigValue(
+                port = checkValue(
                     "database.port",
                     config.getInt("database.port", 3306)
                 ),
-                username = checkConfigValue(
+                username = checkValue(
                     "database.username",
                     config.getString("database.username", "notavailable")!!
                 ),
-                password = checkConfigValue(
+                password = checkValue(
                     "database.password",
                     config.getString("database.password", "notavailable")!!
                 ),
-                database = checkConfigValue(
+                database = checkValue(
                     "database.name",
                     config.getString("database.database", "ncr")!!
                 ),
             )
         }
 
-        isVanishCheckEnabled = checkConfigValue("vanish-check", true)
+        isUpdateCheckEnabled = checkValue("update-check.enabled", true)
+        announceUpdateMessages = checkValue("update-check.announce-on-join", true)
 
-        showInConsole = checkConfigValue("messages.show-in-console", true)
-        joinMessageTemplate = checkConfigValue(
+        isVanishCheckEnabled = checkValue("vanish-check", true)
+
+        showInConsole = checkValue("messages.show-in-console", true)
+        joinMessageTemplate = checkValue(
             "messages.join",
             listOf(
                 "",
@@ -122,7 +123,7 @@ class Config(private val plugin: NightJoiner) {
                 ""
             )
         )
-        quitMessageTemplate = checkConfigValue(
+        quitMessageTemplate = checkValue(
             "messages.quit",
             listOf(
                 "",
@@ -131,11 +132,11 @@ class Config(private val plugin: NightJoiner) {
             )
         )
 
-        defaultJoinMessage = checkConfigValue("messages.default.join", "joined game")
-        defaultQuitMessage = checkConfigValue("messages.default.quit", "leaved")
+        defaultJoinMessage = checkValue("messages.default.join", "joined game")
+        defaultQuitMessage = checkValue("messages.default.quit", "leaved")
 
-        isMotdEnabled = checkConfigValue("messages.motd.enabled", false)
-        motd = checkConfigValue(
+        isMotdEnabled = checkValue("messages.motd.enabled", false)
+        motd = checkValue(
             "messages.motd.text",
             listOf(
                 "",
@@ -146,5 +147,14 @@ class Config(private val plugin: NightJoiner) {
         )
 
         save()
+    }
+
+    private fun <T> checkValue(key: String, value: T): T {
+        return if (!config.contains(key)) {
+            config.set(key, value)
+            value
+        } else {
+            config.get(key) as T
+        }
     }
 }

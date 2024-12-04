@@ -9,7 +9,6 @@ import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
 import zxc.mrdrag0nxyt.nightJoiner.config.Config
 import zxc.mrdrag0nxyt.nightJoiner.config.Messages
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
-import zxc.mrdrag0nxyt.nightJoiner.util.Utilities
 import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
 import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessageWithPlaceholders
 import java.sql.SQLException

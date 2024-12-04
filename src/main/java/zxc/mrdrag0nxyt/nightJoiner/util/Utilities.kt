@@ -7,25 +7,23 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
-object Utilities {
-    fun setColorWithPlaceholders(player: Player?, from: String): Component {
-        return MiniMessage.miniMessage().deserialize(
-            MiniMessage.miniMessage().serialize(
-                LegacyComponentSerializer.legacySection().deserialize(
-                    PlaceholderAPI.setPlaceholders(player, from).replace("&", "§")
-                )
+fun setColorWithPlaceholders(player: Player?, from: String): Component {
+    return MiniMessage.miniMessage().deserialize(
+        MiniMessage.miniMessage().serialize(
+            LegacyComponentSerializer.legacySection().deserialize(
+                PlaceholderAPI.setPlaceholders(player, from).replace("&", "§")
             )
-                .replace("\\<", "<")
-                .replace("\\>", ">")
         )
-    }
+            .replace("\\<", "<")
+            .replace("\\>", ">")
+    )
+}
 
-    fun isVanished(player: Player): Boolean {
-        for (metadataValue in player.getMetadata("vanished")) {
-            if (metadataValue.asBoolean()) return true
-        }
-        return false
+fun isVanished(player: Player): Boolean {
+    for (metadataValue in player.getMetadata("vanished")) {
+        if (metadataValue.asBoolean()) return true
     }
+    return false
 }
 
 fun CommandSender.sendColoredMessage(text: String) {

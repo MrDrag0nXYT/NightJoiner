@@ -10,7 +10,8 @@ import org.bukkit.event.player.PlayerQuitEvent
 import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
 import zxc.mrdrag0nxyt.nightJoiner.config.Config
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
-import zxc.mrdrag0nxyt.nightJoiner.util.Utilities
+import zxc.mrdrag0nxyt.nightJoiner.util.isVanished
+import zxc.mrdrag0nxyt.nightJoiner.util.setColorWithPlaceholders
 import java.sql.SQLException
 
 class PlayerJoinQuitListener(
@@ -28,7 +29,7 @@ class PlayerJoinQuitListener(
 
             for (string in config.motd) {
                 player.sendMessage(
-                    Utilities.setColorWithPlaceholders(player, string)
+                    setColorWithPlaceholders(player, string)
                 )
             }
         }
@@ -47,7 +48,7 @@ class PlayerJoinQuitListener(
         val player = event.player
 
         if (config.isVanishCheckEnabled) {
-            if (Utilities.isVanished(player)) {
+            if (isVanished(player)) {
                 return
             }
         }
@@ -78,7 +79,7 @@ class PlayerJoinQuitListener(
 
             for (string in template) {
                 messages.add(
-                    Utilities.setColorWithPlaceholders(
+                    setColorWithPlaceholders(
                         player,
                         string.replace("%player_text%", eventMessage!!)
                     )
