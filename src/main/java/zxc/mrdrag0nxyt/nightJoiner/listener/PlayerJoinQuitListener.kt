@@ -1,6 +1,8 @@
 package zxc.mrdrag0nxyt.nightJoiner.listener
 
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.title.Title
+import net.kyori.adventure.title.TitlePart
 import org.bukkit.Bukkit
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -35,6 +37,25 @@ class PlayerJoinQuitListener(
         }
 
         broadcast(event, config, true)
+
+        if (config.isMotdEnabled && config.isTitleEnabled) {
+            val player = event.player
+
+            val title = setColorWithPlaceholders(player, config.title)
+            val subtitle = setColorWithPlaceholders(player, config.subtitle)
+            val actionbar = setColorWithPlaceholders(player, config.actionbar)
+
+            player.sendTitlePart(TitlePart.TITLE, title)
+            player.sendTitlePart(TitlePart.SUBTITLE, subtitle)
+            player.sendTitlePart(
+                TitlePart.TIMES, Title.Times.times(
+                    config.titleFadeIn,
+                    config.titleStay,
+                    config.titleFadeOut
+                )
+            )
+            player.sendActionBar(actionbar)
+        }
     }
 
     @EventHandler

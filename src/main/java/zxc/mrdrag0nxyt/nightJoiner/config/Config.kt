@@ -1,8 +1,10 @@
 package zxc.mrdrag0nxyt.nightJoiner.config
 
+import net.kyori.adventure.util.Ticks
 import org.bukkit.configuration.file.YamlConfiguration
 import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
 import java.io.File
+import java.time.Duration
 
 class Config(private val plugin: NightJoiner) {
     private val fileName = "config.yml"
@@ -39,6 +41,21 @@ class Config(private val plugin: NightJoiner) {
     var isMotdEnabled = true
         private set
     var motd = listOf("")
+        private set
+
+    var isTitleEnabled = true
+        private set
+    var title = ""
+        private set
+    var subtitle = ""
+        private set
+    var actionbar = ""
+        private set
+    var titleFadeIn: Duration = Ticks.duration(10)
+        private set
+    var titleStay: Duration = Ticks.duration(70)
+        private set
+    var titleFadeOut: Duration = Ticks.duration(20)
         private set
 
     init {
@@ -145,6 +162,14 @@ class Config(private val plugin: NightJoiner) {
                 ""
             )
         )
+
+        isTitleEnabled = checkValue("messages.motd.title.enabled", false)
+        title = checkValue("messages.motd.title.title", "")
+        subtitle = checkValue("messages.motd.title.subtitle", "")
+        actionbar = checkValue("messages.motd.title.actionbar", "")
+        titleFadeIn = Ticks.duration(checkValue("messages.motd.title.time.fade-in", 10))
+        titleFadeIn = Ticks.duration(checkValue("messages.motd.title.time.stay", 70))
+        titleFadeOut = Ticks.duration(checkValue("messages.motd.title.time.fade-out", 20))
 
         save()
     }
