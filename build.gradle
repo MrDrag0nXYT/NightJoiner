@@ -1,10 +1,11 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'org.jetbrains.kotlin.jvm' version '2.1.0'
 }
 
-group = 'zxc.MrDrag0nXYT'
-version = '1.1.0'
+group = 'zxc.mrdrag0nxyt'
+version = '2.0.0'
 
 repositories {
     mavenCentral()
@@ -32,13 +33,16 @@ dependencies {
     compileOnly "net.kyori:adventure-text-serializer-legacy:4.17.0"
 
     compileOnly "me.clip:placeholderapi:2.11.6"
+    compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    implementation "org.bstats:bstats-bukkit:3.0.2"
+
+    compileOnly "com.google.code.gson:gson:2.11.0"
 }
 
 def targetJavaVersion = 17
 java {
     def javaVersion = JavaVersion.toVersion(targetJavaVersion)
-    sourceCompatibility = javaVersion
-    targetCompatibility = javaVersion
     if (JavaVersion.current() < javaVersion) {
         toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     }
@@ -63,7 +67,7 @@ processResources {
 
 shadowJar {
     archiveClassifier.set('')
-//    relocate 'net.kyori', 'zxc.mrdrag0nxyt.net.kyori'
+    relocate 'org.bstats', 'zxc.mrdrag0nxyt.org.bstats'
 
 //    dependencies {
 //        include(dependency('net.kyori:adventure-text-minimessage'))
@@ -75,4 +79,7 @@ shadowJar {
 
 tasks.build {
     dependsOn shadowJar
+}
+kotlin {
+    jvmToolchain(17)
 }

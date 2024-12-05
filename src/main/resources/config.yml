@@ -13,12 +13,25 @@
 # Enable BStats metrics? You can see it here: https://bstats.org/plugin/bukkit/NightJoiner/23311
 enable-metrics: true
 
+# Enable updates check
+update-check:
+  enabled: true
+  # If player has permission nightjoiner.admin.checkupdates, he will receive message on join
+  announce-on-join: true
+
 #
 # Database for storing custom join messages
-# Supports SQLITE; todo: other DBs
+# Supports SQLITE and MySQL
 #
 database:
   type: SQLITE
+
+  # If you use not SQLite
+  host: 127.0.0.1
+  port: 3306
+  username: user
+  password: password
+  database: nj
 
 #
 # Check that player is vanished
@@ -54,6 +67,16 @@ messages:
     enabled: true
     text:
       - ""
-      - " <#fcfcfc>Добро пожаловать на наш сервер, <#745c97>%player_name%</#745c97>!"
-      - "  <#c0c0c0>‣ <#fcfcfc>Ваша группа: %luckperms_prefix%"
+      - " <#fcfcfc>Welcome, <#745c97>%player_name%</#745c97>!"
+      - "  <#c0c0c0>‣ <#fcfcfc>Your rank: %luckperms_prefix%"
       - ""
+
+    title:
+      enabled: false
+      title: "<#a880ff>Welcome!"
+      subtitle: ""
+      actionbar: "<#fcfcfc><#a880ff>%player_name%</#a880ff>, your rank - %luckperms_prefix%"
+      time:
+        fade-in: 10
+        stay: 70
+        fade-out: 20
