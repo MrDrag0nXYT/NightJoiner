@@ -26,6 +26,8 @@ class Messages(private val plugin: NightJoiner) {
         private set
     var mainTargetUnbanned = listOf("")
         private set
+    var mainTargetReset = listOf("")
+        private set
 
     var setJoinUsage = listOf("")
         private set
@@ -153,6 +155,14 @@ class Messages(private val plugin: NightJoiner) {
             listOf(
                 "",
                 " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#ace1af>разблокирована</#ace1af> возможность установки сообщений",
+                ""
+            )
+        )
+        mainTargetReset = checkValue(
+            "nightjoiner.reset",
+            listOf(
+                "",
+                " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Сообщения игрока <#745c97>%player%</#745c97> <#ace1af>сброшены</#ace1af>!",
                 ""
             )
         )

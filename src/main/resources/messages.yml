@@ -41,6 +41,11 @@ nightjoiner:
     - ""
     - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Игроку <#745c97>%player%</#745c97> <#ace1af>разблокирована</#ace1af> возможность установки сообщений"
     - ""
+  reset:
+    - ""
+    - " <#745c97>NightCodes <#c0c0c0>› <#fcfcfc>Сообщения игрока <#745c97>%player%</#745c97> <#ace1af>сброшены</#ace1af>!"
+    - ""
+
 
 setjoin:
   usage:

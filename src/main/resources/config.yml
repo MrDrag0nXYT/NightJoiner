@@ -6,7 +6,7 @@
 #   ██║░╚███║██║╚██████╔╝██║░░██║░░░██║░░░╚█████╔╝╚█████╔╝██║██║░╚███║███████╗██║░░██║
 #   ╚═╝░░╚══╝╚═╝░╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░░╚════╝░░╚════╝░╚═╝╚═╝░░╚══╝╚══════╝╚═╝░░╚═╝
 #
-#                   Author: mrdrag0nxyt (https://drakoshaslv.ru)
+#                   Author: MrDrag0nXYT (https://drakoshaslv.ru)
 #             Source code: https://github.com/MrDrag0nXYT/NightJoiner
 #
 
@@ -21,10 +21,17 @@ update-check:
 
 #
 # Database for storing custom join messages
-# Supports SQLITE; todo: other DBs
+# Supports SQLITE and MySQL
 #
 database:
   type: SQLITE
+
+  # If you use not SQLite
+  host: 127.0.0.1
+  port: 3306
+  username: user
+  password: password
+  database: nj
 
 #
 # Check that player is vanished

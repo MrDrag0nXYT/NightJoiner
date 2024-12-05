@@ -32,27 +32,29 @@ class ResetJoinCommand(
 
             val databaseWorker = databaseManager.databaseWorker
 
-            try {
-                databaseManager.getConnection().use { connection ->
-                    val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
-                    if (!isBlocked) {
-                        databaseWorker.resetJoinMessage(connection, player.uniqueId, player.name)
+            plugin.server.scheduler.runTaskAsynchronously(plugin, Runnable {
+                try {
+                    databaseManager.getConnection().use { connection ->
+                        val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
+                        if (!isBlocked) {
+                            databaseWorker.resetJoinMessage(connection, player.uniqueId, player.name)
 
-                        for (string in messages.resetJoinSuccess) {
-                            commandSender.sendColoredMessage(string)
-                        }
-                    } else {
-                        for (string in messages.resetJoinBlocked) {
-                            commandSender.sendColoredMessage(string)
+                            for (string in messages.resetJoinSuccess) {
+                                commandSender.sendColoredMessage(string)
+                            }
+                        } else {
+                            for (string in messages.resetJoinBlocked) {
+                                commandSender.sendColoredMessage(string)
+                            }
                         }
                     }
+                } catch (e: SQLException) {
+                    e.printStackTrace()
+                    for (string in messages.globalDatabaseError) {
+                        commandSender.sendColoredMessage(string)
+                    }
                 }
-            } catch (e: SQLException) {
-                e.printStackTrace()
-                for (string in messages.globalDatabaseError) {
-                    commandSender.sendColoredMessage(string)
-                }
-            }
+            })
         } else {
             for (string in messages.globalNotPlayer) {
                 commandSender.sendColoredMessage(string)

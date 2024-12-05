@@ -32,34 +32,36 @@ class ResetQuitCommand(
 
             val databaseWorker = databaseManager.databaseWorker
 
-            try {
-                databaseManager.getConnection().use { connection ->
-                    val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
-                    if (!isBlocked) {
-                        databaseWorker.resetQuitMessage(connection, player.uniqueId, player.name)
+            plugin.server.scheduler.runTaskAsynchronously(plugin, Runnable {
+                try {
+                    databaseManager.getConnection().use { connection ->
+                        val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
+                        if (!isBlocked) {
+                            databaseWorker.resetQuitMessage(connection, player.uniqueId, player.name)
 
-                        for (string in messages.resetQuitSuccess) {
-                            commandSender.sendColoredMessage(string)
-                        }
-                    } else {
-                        for (string in messages.resetQuitBlocked) {
-                            commandSender.sendColoredMessage(string)
+                            for (string in messages.resetQuitSuccess) {
+                                commandSender.sendColoredMessage(string)
+                            }
+                        } else {
+                            for (string in messages.resetQuitBlocked) {
+                                commandSender.sendColoredMessage(string)
+                            }
                         }
                     }
-                }
-            } catch (e: SQLException) {
-                /*
-                 * По реке плывёт кирпич
-                 * Деревянный как стекло
-                 * Ну и пусть себе плывёт
-                 * Нам не нужен пенопласт
-                 */
+                } catch (e: SQLException) {
+                    /*
+                     * По реке плывёт кирпич
+                     * Деревянный как стекло
+                     * Ну и пусть себе плывёт
+                     * Нам не нужен пенопласт
+                     */
 
-                e.printStackTrace()
-                for (string in messages.globalDatabaseError) {
-                    commandSender.sendColoredMessage(string)
+                    e.printStackTrace()
+                    for (string in messages.globalDatabaseError) {
+                        commandSender.sendColoredMessage(string)
+                    }
                 }
-            }
+            })
         } else {
             for (string in messages.globalNotPlayer) {
                 commandSender.sendColoredMessage(string)

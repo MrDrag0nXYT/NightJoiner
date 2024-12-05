@@ -46,6 +46,8 @@ permissions:
     default: op
   nightjoiner.admin.unban:
     default: op
+  nightjoiner.admin.reset:
+    default: op
 
   nightjoiner.admin.checkupdates:
     default: op
@@ -62,6 +64,7 @@ permissions:
       nightjoiner.admin.reload: true
       nightjoiner.admin.ban: true
       nightjoiner.admin.unban: true
+      nightjoiner.admin.reset: true
       nightjoiner.admin.checkupdates: true
       nightjoiner.player.*: true
 

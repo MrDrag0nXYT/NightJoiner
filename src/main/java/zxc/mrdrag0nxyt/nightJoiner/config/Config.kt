@@ -103,8 +103,8 @@ class Config(private val plugin: NightJoiner) {
                     config.getString("database.password", "notavailable")!!
                 ),
                 database = checkValue(
-                    "database.name",
-                    config.getString("database.database", "ncr")!!
+                    "database.database",
+                    config.getString("database.database", "nj")!!
                 ),
             )
         }

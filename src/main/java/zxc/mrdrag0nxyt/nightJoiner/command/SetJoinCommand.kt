@@ -47,32 +47,34 @@ class SetJoinCommand(
                 }
             }
 
-            try {
-                databaseManager.getConnection().use { connection ->
-                    val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
-                    if (!isBlocked) {
-                        databaseWorker.setJoinMessage(
-                            connection,
-                            player.uniqueId,
-                            player.name,
-                            message
-                        )
+            plugin.server.scheduler.runTaskAsynchronously(plugin, Runnable {
+                try {
+                    databaseManager.getConnection().use { connection ->
+                        val isBlocked = databaseWorker!!.getBlockStatus(connection!!, player.name)
+                        if (!isBlocked) {
+                            databaseWorker.setJoinMessage(
+                                connection,
+                                player.uniqueId,
+                                player.name,
+                                message
+                            )
 
-                        for (string in messages.setJoinSuccess) {
-                            commandSender.sendColoredMessageWithPlaceholders(string, mapOf("message" to message))
-                        }
-                    } else {
-                        for (string in messages.setJoinBlocked) {
-                            commandSender.sendColoredMessage(string)
+                            for (string in messages.setJoinSuccess) {
+                                commandSender.sendColoredMessageWithPlaceholders(string, mapOf("message" to message))
+                            }
+                        } else {
+                            for (string in messages.setJoinBlocked) {
+                                commandSender.sendColoredMessage(string)
+                            }
                         }
                     }
+                } catch (e: SQLException) {
+                    e.printStackTrace()
+                    for (string in messages.globalDatabaseError) {
+                        commandSender.sendColoredMessage(string)
+                    }
                 }
-            } catch (e: SQLException) {
-                e.printStackTrace()
-                for (string in messages.globalDatabaseError) {
-                    commandSender.sendColoredMessage(string)
-                }
-            }
+            })
         } else {
             for (string in messages.globalNotPlayer) {
                 commandSender.sendColoredMessage(string)
