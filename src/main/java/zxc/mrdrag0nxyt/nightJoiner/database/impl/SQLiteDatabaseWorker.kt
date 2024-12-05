@@ -133,7 +133,13 @@ class SQLiteDatabaseWorker : DatabaseWorker {
         newMessage: String,
         messageType: String
     ) {
-        val sql = "INSERT OR REPLACE INTO messages (uuid, username, $messageType) VALUES (?, ?, ?)"
+        val sql = """
+        INSERT INTO messages (uuid, username, $messageType)
+        VALUES (?, ?, ?)
+        ON CONFLICT DO UPDATE SET 
+            username = excluded.username, 
+            $messageType = excluded.$messageType;
+        """.trimIndent()
 
         connection.prepareStatement(sql).use {
             it.setString(1, uuid.toString())
@@ -146,7 +152,13 @@ class SQLiteDatabaseWorker : DatabaseWorker {
 
     @Throws(SQLException::class)
     private fun resetMessageForUser(connection: Connection, uuid: UUID, username: String, messageType: String) {
-        val sql = "INSERT OR REPLACE INTO messages (uuid, username, $messageType) VALUES (?, ?, NULL)"
+        val sql = """
+        INSERT INTO messages (uuid, username, $messageType)
+        VALUES (?, ?, null)
+        ON CONFLICT DO UPDATE SET 
+            username = excluded.username, 
+            $messageType = excluded.$messageType;
+        """.trimIndent()
 
         connection.prepareStatement(sql).use {
             it.setString(1, uuid.toString())
