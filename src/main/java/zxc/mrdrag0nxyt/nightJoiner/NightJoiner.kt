@@ -37,7 +37,7 @@ class NightJoiner : JavaPlugin() {
         if (config.isUpdateCheckEnabled) server.pluginManager.registerEvents(UpdateChecker(this, config), this)
         if (config.metricsEnabled) Metrics(this, 23311)
 
-        getCommand("nightjoiner")?.setExecutor(MainCommand(this, config, messages, databaseManager))
+        getCommand("nightjoiner")?.setExecutor(MainCommand(this, messages, databaseManager))
         getCommand("setjoin")?.setExecutor(SetJoinCommand(this, config, messages, databaseManager))
         getCommand("setquit")?.setExecutor(SetQuitCommand(this, config, messages, databaseManager))
         getCommand("resetjoin")?.setExecutor(
@@ -49,10 +49,7 @@ class NightJoiner : JavaPlugin() {
         getCommand("resetquit")?.setExecutor(ResetQuitCommand(this, config, messages, databaseManager))
 
         server.pluginManager.registerEvents(
-            PlayerJoinQuitListener(
-                this,
-                config, databaseManager
-            ), this
+            PlayerJoinQuitListener(config, databaseManager), this
         )
 
         sendTitle(true)
