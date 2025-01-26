@@ -1,16 +1,10 @@
 package zxc.mrdrag0nxyt.nightJoiner.config
 
 import net.kyori.adventure.util.Ticks
-import org.bukkit.configuration.file.YamlConfiguration
 import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
-import java.io.File
 import java.time.Duration
 
-class Config(private val plugin: NightJoiner) {
-    private val fileName = "config.yml"
-    private var file = File(plugin.dataFolder, fileName)
-    private var config = init()
-
+class Config(plugin: NightJoiner) : AbstractConfig(plugin, "config.yml") {
     var metricsEnabled = true
         private set
     var isVanishCheckEnabled = true
@@ -62,40 +56,11 @@ class Config(private val plugin: NightJoiner) {
         updateConfig()
     }
 
-    private fun extractIfNotExist() {
-        if (!file.exists()) {
-            plugin.saveResource(fileName, false)
-        }
-    }
-
-    private fun init(): YamlConfiguration {
-        extractIfNotExist()
-        return YamlConfiguration.loadConfiguration(file)
-    }
-
-    fun reload() {
-        extractIfNotExist()
-        try {
-            config.load(file)
-        } catch (e: Exception) {
-            plugin.logger.severe(e.toString())
-        }
-    }
-
-    fun save() {
-        try {
-            config.save(file)
-        } catch (e: Exception) {
-            plugin.logger.severe(e.toString())
-        }
-    }
-
-
     /*
     * Checking config values
     */
 
-    private fun updateConfig() {
+    override fun updateConfig() {
         metricsEnabled = checkValue("enable-metrics", true)
 
         databaseType = DatabaseType.fromStringType(
@@ -172,14 +137,5 @@ class Config(private val plugin: NightJoiner) {
         titleFadeOut = Ticks.duration(checkValue("messages.motd.title.time.fade-out", 20))
 
         save()
-    }
-
-    private fun <T> checkValue(key: String, value: T): T {
-        return if (!config.contains(key)) {
-            config.set(key, value)
-            value
-        } else {
-            config.get(key) as T
-        }
     }
 }
