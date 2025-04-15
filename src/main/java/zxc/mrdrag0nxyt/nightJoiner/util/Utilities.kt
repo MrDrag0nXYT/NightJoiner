@@ -4,7 +4,6 @@ import me.clip.placeholderapi.PlaceholderAPI
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
-import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 
 fun setColorWithPlaceholders(player: Player?, from: String): Component {
@@ -24,19 +23,4 @@ fun isVanished(player: Player): Boolean {
         if (metadataValue.asBoolean()) return true
     }
     return false
-}
-
-fun CommandSender.sendColoredMessage(text: String) {
-    sendMessage(MiniMessage.miniMessage().deserialize(text))
-}
-
-fun CommandSender.sendColoredMessageWithPlaceholders(text: String, placeholders: Map<String, String>) {
-    var result = text
-    placeholders.entries.forEach { (key, value) ->
-        result = result.replace("%$key%", value)
-    }
-
-    sendMessage(
-        MiniMessage.miniMessage().deserialize(result)
-    )
 }
