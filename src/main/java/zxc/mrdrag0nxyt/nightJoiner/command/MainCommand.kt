@@ -1,24 +1,21 @@
 package zxc.mrdrag0nxyt.nightJoiner.command
 
+import net.kyori.adventure.text.TextReplacementConfig
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
 import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
-//import zxc.mrdrag0nxyt.nightJoiner.config.Config
 import zxc.mrdrag0nxyt.nightJoiner.config.Messages
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseWorker
 import zxc.mrdrag0nxyt.nightJoiner.util.exception.UserRecordNotFound
-import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
-import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessageWithPlaceholders
 import java.sql.SQLException
 import java.util.*
 
 class MainCommand(
     private val plugin: NightJoiner,
-//    private val config: Config,
     private val messages: Messages,
     private val databaseManager: DatabaseManager
 ) :
@@ -61,15 +58,15 @@ class MainCommand(
 
 
     private fun usage(commandSender: CommandSender): Boolean {
-        for (string in messages.mainUsage) {
-            commandSender.sendColoredMessage(string)
+        for (component in messages.mainUsage) {
+            commandSender.sendMessage(component)
         }
         return false
     }
 
     private fun noPermission(commandSender: CommandSender): Boolean {
-        for (string in messages.globalNoPermission) {
-            commandSender.sendColoredMessage(string)
+        for (component in messages.globalNoPermission) {
+            commandSender.sendMessage(component)
         }
         return false
     }
@@ -89,21 +86,31 @@ class MainCommand(
                             connection!!, Bukkit.getOfflinePlayer(strings[1]).uniqueId,
                             strings[1]
                         )
-                        for (string in messages.mainTargetReset) {
-                            commandSender.sendColoredMessageWithPlaceholders(
-                                string, mapOf("player" to strings[1])
+                        val textReplacementConfig = TextReplacementConfig.builder()
+                            .match("%player%")
+                            .replacement(strings[1])
+                            .build()
+
+                        for (component in messages.mainTargetReset) {
+                            commandSender.sendMessage(
+                                component.replaceText(textReplacementConfig)
                             )
                         }
                     }
                 } catch (e: SQLException) {
                     e.printStackTrace()
-                    for (string in messages.globalDatabaseError) {
-                        commandSender.sendColoredMessage(string)
+                    for (component in messages.globalDatabaseError) {
+                        commandSender.sendMessage(component)
                     }
                 } catch (e: UserRecordNotFound) {
-                    for (string in messages.mainTargetNotFound) {
-                        commandSender.sendColoredMessageWithPlaceholders(
-                            string, mapOf("player" to strings[1])
+                    val textReplacementConfig = TextReplacementConfig.builder()
+                        .match("%player%")
+                        .replacement(strings[1])
+                        .build()
+
+                    for (component in messages.mainTargetNotFound) {
+                        commandSender.sendMessage(
+                            component.replaceText(textReplacementConfig)
                         )
                     }
                 }
@@ -129,21 +136,31 @@ class MainCommand(
                             strings[1]
                         )
                         databaseWorker?.setBlockStatus(connection!!, strings[1], 1)
-                        for (string in messages.mainTargetBanned) {
-                            commandSender.sendColoredMessageWithPlaceholders(
-                                string, mapOf("player" to strings[1])
+                        val textReplacementConfig = TextReplacementConfig.builder()
+                            .match("%player%")
+                            .replacement(strings[1])
+                            .build()
+
+                        for (component in messages.mainTargetBanned) {
+                            commandSender.sendMessage(
+                                component.replaceText(textReplacementConfig)
                             )
                         }
                     }
                 } catch (e: SQLException) {
                     e.printStackTrace()
                     for (string in messages.globalDatabaseError) {
-                        commandSender.sendColoredMessage(string)
+                        commandSender.sendMessage(string)
                     }
                 } catch (e: UserRecordNotFound) {
-                    for (string in messages.mainTargetNotFound) {
-                        commandSender.sendColoredMessageWithPlaceholders(
-                            string, mapOf("player" to strings[1])
+                    val textReplacementConfig = TextReplacementConfig.builder()
+                        .match("%player%")
+                        .replacement(strings[1])
+                        .build()
+
+                    for (component in messages.mainTargetNotFound) {
+                        commandSender.sendMessage(
+                            component.replaceText(textReplacementConfig)
                         )
                     }
                 }
@@ -165,21 +182,31 @@ class MainCommand(
                 try {
                     databaseManager.getConnection().use { connection ->
                         databaseWorker!!.setBlockStatus(connection!!, strings[1], 0)
-                        for (string in messages.mainTargetUnbanned) {
-                            commandSender.sendColoredMessageWithPlaceholders(
-                                string, mapOf("player" to strings[1])
+                        val textReplacementConfig = TextReplacementConfig.builder()
+                            .match("%player%")
+                            .replacement(strings[1])
+                            .build()
+
+                        for (component in messages.mainTargetUnbanned) {
+                            commandSender.sendMessage(
+                                component.replaceText(textReplacementConfig)
                             )
                         }
                     }
                 } catch (e: SQLException) {
                     e.printStackTrace()
                     for (string in messages.globalDatabaseError) {
-                        commandSender.sendColoredMessage(string)
+                        commandSender.sendMessage(string)
                     }
                 } catch (e: UserRecordNotFound) {
-                    for (string in messages.mainTargetNotFound) {
-                        commandSender.sendColoredMessageWithPlaceholders(
-                            string, mapOf("player" to strings[1])
+                    val textReplacementConfig = TextReplacementConfig.builder()
+                        .match("%player%")
+                        .replacement(strings[1])
+                        .build()
+
+                    for (component in messages.mainTargetNotFound) {
+                        commandSender.sendMessage(
+                            component.replaceText(textReplacementConfig)
                         )
                     }
                 }
@@ -194,7 +221,7 @@ class MainCommand(
 
         plugin.reload()
         for (string in messages.mainReloaded) {
-            commandSender.sendColoredMessage(string)
+            commandSender.sendMessage(string)
         }
         return true
     }

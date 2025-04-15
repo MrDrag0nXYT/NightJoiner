@@ -6,23 +6,20 @@ import org.bukkit.command.CommandSender
 import org.bukkit.command.TabCompleter
 import org.bukkit.entity.Player
 import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
-import zxc.mrdrag0nxyt.nightJoiner.config.Config
-import zxc.mrdrag0nxyt.nightJoiner.config.Messages
+import zxc.mrdrag0nxyt.nightJoiner.config.*
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
-import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
 import java.sql.SQLException
 
 class ResetQuitCommand(
     private val plugin: NightJoiner,
-    private val config: Config,
     private val messages: Messages,
     private val databaseManager: DatabaseManager
 ) :
     CommandExecutor, TabCompleter {
     override fun onCommand(commandSender: CommandSender, command: Command, s: String, strings: Array<String>): Boolean {
         if (!commandSender.hasPermission("nightjoiner.player.setquit")) {
-            for (string in messages.globalNoPermission) {
-                commandSender.sendColoredMessage(string)
+            for (component in messages.globalNoPermission) {
+                commandSender.sendMessage(component)
             }
             return true
         }
@@ -39,12 +36,12 @@ class ResetQuitCommand(
                         if (!isBlocked) {
                             databaseWorker.resetQuitMessage(connection, player.uniqueId, player.name)
 
-                            for (string in messages.resetQuitSuccess) {
-                                commandSender.sendColoredMessage(string)
+                            for (component in messages.resetQuitSuccess) {
+                                commandSender.sendMessage(component)
                             }
                         } else {
-                            for (string in messages.resetQuitBlocked) {
-                                commandSender.sendColoredMessage(string)
+                            for (component in messages.resetQuitBlocked) {
+                                commandSender.sendMessage(component)
                             }
                         }
                     }
@@ -57,14 +54,14 @@ class ResetQuitCommand(
                      */
 
                     e.printStackTrace()
-                    for (string in messages.globalDatabaseError) {
-                        commandSender.sendColoredMessage(string)
+                    for (component in messages.globalDatabaseError) {
+                        commandSender.sendMessage(component)
                     }
                 }
             })
         } else {
-            for (string in messages.globalNotPlayer) {
-                commandSender.sendColoredMessage(string)
+            for (component in messages.globalNotPlayer) {
+                commandSender.sendMessage(component)
             }
         }
 

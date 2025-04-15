@@ -1,5 +1,6 @@
 package zxc.mrdrag0nxyt.nightJoiner
 
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.plugin.java.JavaPlugin
@@ -9,7 +10,6 @@ import zxc.mrdrag0nxyt.nightJoiner.config.Messages
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
 import zxc.mrdrag0nxyt.nightJoiner.listener.PlayerJoinQuitListener
 import zxc.mrdrag0nxyt.nightJoiner.util.UpdateChecker
-import zxc.mrdrag0nxyt.nightJoiner.util.sendColoredMessage
 import java.sql.SQLException
 
 class NightJoiner : JavaPlugin() {
@@ -38,15 +38,15 @@ class NightJoiner : JavaPlugin() {
         if (config.metricsEnabled) Metrics(this, 23311)
 
         getCommand("nightjoiner")?.setExecutor(MainCommand(this, messages, databaseManager))
-        getCommand("setjoin")?.setExecutor(SetJoinCommand(this, config, messages, databaseManager))
-        getCommand("setquit")?.setExecutor(SetQuitCommand(this, config, messages, databaseManager))
+        getCommand("setjoin")?.setExecutor(SetJoinCommand(this, messages, databaseManager))
+        getCommand("setquit")?.setExecutor(SetQuitCommand(this, messages, databaseManager))
         getCommand("resetjoin")?.setExecutor(
             ResetJoinCommand(
-                this, config, messages,
+                this, messages,
                 databaseManager
             )
         )
-        getCommand("resetquit")?.setExecutor(ResetQuitCommand(this, config, messages, databaseManager))
+        getCommand("resetquit")?.setExecutor(ResetQuitCommand(this, messages, databaseManager))
 
         server.pluginManager.registerEvents(
             PlayerJoinQuitListener(config, databaseManager), this
@@ -68,16 +68,12 @@ class NightJoiner : JavaPlugin() {
 
     private fun sendTitle(isEnable: Boolean) {
         val isEnableMessage =
-            if (isEnable) "<#ace1af>Plugin successfully loaded!" else "<#d45079>Plugin successfully unloaded!"
+            if (isEnable) "<#ace1af>successfully loaded!" else "<#d45079>successfully unloaded!"
 
         // Здесь можно было бы сделать через getLogger().info(), но у меня setColor возвращает Component. Зато MiniMessage)))
         val sender = Bukkit.getConsoleSender()
+        val miniMessage = MiniMessage.miniMessage()
 
-        sender.sendColoredMessage(" ")
-        sender.sendColoredMessage(" <#a880ff>█▄░█ █ █▀▀ █░█ ▀█▀ ░░█ █▀█ █ █▄░█ █▀▀ █▀█</#a880ff>    <#696969>|</#696969>    <#fcfcfc>Version: <#a880ff>${description.version}</#a880ff>")
-        sender.sendColoredMessage(" <#a880ff>█░▀█ █ █▄█ █▀█ ░█░ █▄█ █▄█ █ █░▀█ ██▄ █▀▄</#a880ff>    <#696969>|</#696969>    <#fcfcfc>Author: <#a880ff>MrDrag0nXYT ( https://drakoshaslv.ru )</#a880ff>")
-        sender.sendColoredMessage(" ")
-        sender.sendColoredMessage(" $isEnableMessage")
-        sender.sendColoredMessage(" ")
+        sender.sendMessage(miniMessage.deserialize("<#a880ff>NightJoiner ${description.version} <#fcfcfc>by</#fcfcfc> MrDrag0nXYT</#a880ff> $isEnableMessage"))
     }
 }
