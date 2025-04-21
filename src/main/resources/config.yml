@@ -42,7 +42,7 @@ vanish-check: true
 #
 # Join/quit and welcome messages format
 # Support:
-#   - MiniMessage (<#abcdef>) and Legacy (&#abcdef) formatting codes
+#   - MiniMessage (<#abcdef>) and Legacy (&#abcdef or §x§a§b§c§d§e§f) formatting codes
 #   - PlaceholderAPI placeholders
 #
 messages:

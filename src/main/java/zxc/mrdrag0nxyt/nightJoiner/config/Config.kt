@@ -1,5 +1,7 @@
 package zxc.mrdrag0nxyt.nightJoiner.config
 
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.kyori.adventure.util.Ticks
 import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
 import java.time.Duration
@@ -45,11 +47,11 @@ class Config(plugin: NightJoiner) : AbstractConfig(plugin, "config.yml") {
         private set
     var actionbar = ""
         private set
-    var titleFadeIn: Duration = Ticks.duration(10)
+    var titleFadeIn = 10
         private set
-    var titleStay: Duration = Ticks.duration(70)
+    var titleStay = 70
         private set
-    var titleFadeOut: Duration = Ticks.duration(20)
+    var titleFadeOut = 20
         private set
 
     init {
@@ -97,6 +99,13 @@ class Config(plugin: NightJoiner) : AbstractConfig(plugin, "config.yml") {
         isVanishCheckEnabled = checkValue("vanish-check", true)
 
         showInConsole = checkValue("messages.show-in-console", true)
+
+        val miniMessage = MiniMessage.miniMessage()
+        val legacyComponentSerializer = LegacyComponentSerializer.builder()
+            .hexColors()
+            .useUnusualXRepeatedCharacterHexFormat()
+            .build()
+
         joinMessageTemplate = checkValue(
             "messages.join",
             listOf(
@@ -104,7 +113,11 @@ class Config(plugin: NightJoiner) : AbstractConfig(plugin, "config.yml") {
                 " <#ace1af>+</#ace1af> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%",
                 ""
             )
-        )
+        ).map { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
+
         quitMessageTemplate = checkValue(
             "messages.quit",
             listOf(
@@ -112,7 +125,10 @@ class Config(plugin: NightJoiner) : AbstractConfig(plugin, "config.yml") {
                 " <#d45079>-</#d45079> &#fcfcfc%luckperms_prefix% %player_name% &#fcfcfc%player_text%",
                 ""
             )
-        )
+        ).map { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
 
         defaultJoinMessage = checkValue("messages.default.join", "joined game")
         defaultQuitMessage = checkValue("messages.default.quit", "leaved")
@@ -126,15 +142,27 @@ class Config(plugin: NightJoiner) : AbstractConfig(plugin, "config.yml") {
                 " <#c0c0c0>‣ <#fcfcfc>Your group: %luckperms_prefix%",
                 ""
             )
-        )
+        ).map { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
 
         isTitleEnabled = checkValue("messages.motd.title.enabled", false)
-        title = checkValue("messages.motd.title.title", "")
-        subtitle = checkValue("messages.motd.title.subtitle", "")
-        actionbar = checkValue("messages.motd.title.actionbar", "")
-        titleFadeIn = Ticks.duration(checkValue("messages.motd.title.time.fade-in", 10))
-        titleFadeIn = Ticks.duration(checkValue("messages.motd.title.time.stay", 70))
-        titleFadeOut = Ticks.duration(checkValue("messages.motd.title.time.fade-out", 20))
+        title = checkValue("messages.motd.title.title", "").let { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
+        subtitle = checkValue("messages.motd.title.subtitle", "").let { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
+        actionbar = checkValue("messages.motd.title.actionbar", "").let { str ->
+            val component = miniMessage.deserialize(str)
+            legacyComponentSerializer.serialize(component)
+        }
+        titleFadeIn = checkValue("messages.motd.title.time.fade-in", 10)
+        titleFadeIn = checkValue("messages.motd.title.time.stay", 70)
+        titleFadeOut = checkValue("messages.motd.title.time.fade-out", 20)
 
         save()
     }
