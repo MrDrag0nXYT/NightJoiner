@@ -1,8 +1,6 @@
 package zxc.mrdrag0nxyt.nightJoiner.listener
 
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.title.Title
-import net.kyori.adventure.title.TitlePart
+import me.clip.placeholderapi.PlaceholderAPI
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
@@ -10,11 +8,10 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-//import zxc.mrdrag0nxyt.nightJoiner.NightJoiner
 import zxc.mrdrag0nxyt.nightJoiner.config.Config
 import zxc.mrdrag0nxyt.nightJoiner.database.DatabaseManager
+import zxc.mrdrag0nxyt.nightJoiner.util.colorize
 import zxc.mrdrag0nxyt.nightJoiner.util.isVanished
-import zxc.mrdrag0nxyt.nightJoiner.util.setColorWithPlaceholders
 import java.sql.SQLException
 
 class PlayerJoinQuitListener(
@@ -30,10 +27,10 @@ class PlayerJoinQuitListener(
         if (config.isMotdEnabled) {
             val player = event.player
 
-            for (string in config.motd) {
-                player.sendMessage(
-                    setColorWithPlaceholders(player, string)
-                )
+            config.motd.forEach { str ->
+                var formattedString = PlaceholderAPI.setPlaceholders(player, str)
+                formattedString = colorize(formattedString)
+                player.sendMessage(formattedString)
             }
 
             if (config.isTitleEnabled) {
@@ -52,19 +49,11 @@ class PlayerJoinQuitListener(
 
 
     private fun sendTitle(player: Player) {
-        val title = setColorWithPlaceholders(player, config.title)
-        val subtitle = setColorWithPlaceholders(player, config.subtitle)
-        val actionbar = setColorWithPlaceholders(player, config.actionbar)
+        val title = colorize(PlaceholderAPI.setPlaceholders(player, config.title))
+        val subtitle = colorize(PlaceholderAPI.setPlaceholders(player, config.subtitle))
+        val actionbar = colorize(PlaceholderAPI.setPlaceholders(player, config.actionbar))
 
-        player.sendTitlePart(TitlePart.TITLE, title)
-        player.sendTitlePart(TitlePart.SUBTITLE, subtitle)
-        player.sendTitlePart(
-            TitlePart.TIMES, Title.Times.times(
-                config.titleFadeIn,
-                config.titleStay,
-                config.titleFadeOut
-            )
-        )
+        player.sendTitle(title, subtitle, config.titleFadeIn, config.titleStay, config.titleFadeOut)
         player.sendActionBar(actionbar)
     }
 
@@ -78,27 +67,23 @@ class PlayerJoinQuitListener(
         }
 
         val eventMessage = getCurrentMessage(isJoin, player)
-        val messages: MutableList<Component> = ArrayList()
         val template = if (isJoin) config.joinMessageTemplate else config.quitMessageTemplate
 
-        for (string in template) {
-            messages.add(
-                setColorWithPlaceholders(
-                    player,
-                    string.replace("%player_text%", eventMessage)
-                )
-            )
+        val messages = template.map { str ->
+            var parsed = str.replace("%player_text%", eventMessage)
+            parsed = PlaceholderAPI.setPlaceholders(player, parsed)
+            colorize(parsed)
         }
 
         for (onlinePlayer in Bukkit.getOnlinePlayers()) {
-            for (component in messages) {
-                onlinePlayer.sendMessage(component)
+            for (str in messages) {
+                onlinePlayer.sendMessage(str)
             }
         }
 
         if (config.showInConsole) {
-            for (component in messages) {
-                Bukkit.getConsoleSender().sendMessage(component)
+            for (str in messages) {
+                Bukkit.getConsoleSender().sendMessage(str)
             }
         }
     }
